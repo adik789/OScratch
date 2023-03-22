@@ -8,7 +8,16 @@ opam install raylib
 dune build 
 make play 
 
-*For Windows* --> Download XLaunch then run 
+*For Windows* --> 
+1. Download XLaunch (Vcxsrv is the one we used)
+
+2. Open XLaunch, click next two times and then check "Disable Access Control", then
+create the server by pressing "Finish"
+
+then in the terminal, run :
 echo "export DISPLAY=\$(cat /etc/resolv.conf | grep nameserver | awk '{print \$2; exit;}'):0.0" >> ~/.bashrc
+
+3. Delete terminal, make a new one, then run:
+
 dune build
 make play 
