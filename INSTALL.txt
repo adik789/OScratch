@@ -1,0 +1,14 @@
+*Load Raylib onto your opam switch *
+opam depext raylib
+opam install raylib
+
+*open vs code and in the terminal cd into CS3110FinalProject*
+
+*For Mac*
+dune build 
+make play 
+
+*For Windows* --> Download XLaunch then run 
+echo "export DISPLAY=\$(cat /etc/resolv.conf | grep nameserver | awk '{print \$2; exit;}'):0.0" >> ~/.bashrc
+dune build
+make play 
