@@ -16,33 +16,64 @@ let within rect x1 y1 =
   then true
   else false
 
-let code_rect = Raylib.Rectangle.create 10. 100. 100. 40.
+let move_rect = Raylib.Rectangle.create 10. 100. 100. 40.
+let turn_rect = Raylib.Rectangle.create 10. 150. 100. 40.
 let on_screen = []
 let default_x = 10
 let default_y = 100
 let defaul_spacing = 100
 
+open Raylib
+
+let update_x block =
+  if
+    is_mouse_button_down MouseButton.Left
+    && within block
+         (float_of_int (get_mouse_x ()))
+         (float_of_int (get_mouse_y ()))
+  then get_mouse_x () - 50
+  else int_of_float (Rectangle.x block)
+
+let update_y block =
+  if
+    is_mouse_button_down MouseButton.Left
+    && within block
+         (float_of_int (get_mouse_x ()))
+         (float_of_int (get_mouse_y ()))
+  then get_mouse_y () - 20
+  else int_of_float (Rectangle.y block)
+
+(** Changes the blocks position if the mouse is clicking on it*)
+let change_block_position block =
+  let x' = update_x block in
+  let y' = update_y block in
+  change_rect block (float_of_int x') (float_of_int y')
+
+(** The block representing the "move" function*)
+let move_code_block () =
+  let block = move_rect in
+  let _ = change_block_position block in
+  let _ = draw_rectangle_rec block Color.gold in
+
+  draw_text "Move Cat"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 5.))
+    16 Color.black
+
+let turn_code_block () =
+  let block = turn_rect in
+  let _ = change_block_position block in
+  let _ = draw_rectangle_rec block Color.green in
+
+  draw_text "Turn Cat"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 5.))
+    16 Color.black
+
 let rec loop () =
-  if Raylib.window_should_close () then Raylib.close_window ()
+  if window_should_close () then Raylib.close_window
   else
-    let open Raylib in
-    let rect_pos_x =
-      if
-        is_mouse_button_down MouseButton.Left
-        && within code_rect
-             (float_of_int (get_mouse_x ()))
-             (float_of_int (get_mouse_y ()))
-      then get_mouse_x () - 50
-      else int_of_float (Rectangle.x code_rect)
-    and rect_pos_y =
-      if
-        is_mouse_button_down MouseButton.Left
-        && within code_rect
-             (float_of_int (get_mouse_x ()))
-             (float_of_int (get_mouse_y ()))
-      then get_mouse_y () - 20
-      else int_of_float (Rectangle.y code_rect)
-    in
+    let _ = 10 in
     begin_drawing ();
     clear_background Color.raywhite;
     draw_text "OScratch" 10 10 48 Color.blue;
@@ -56,8 +87,7 @@ let rec loop () =
     draw_text "Workspace"
       ((Raylib.get_screen_width () / 4) + 10)
       68 16 Color.black;
-    change_rect code_rect (float_of_int rect_pos_x) (float_of_int rect_pos_y);
-    draw_rectangle_rec code_rect Color.gold;
-    draw_text "Move Cat" (rect_pos_x + 10) (rect_pos_y + 5) 16 Color.black;
+    move_code_block ();
+    turn_code_block ();
     end_drawing ();
     loop ()
