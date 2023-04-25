@@ -17,7 +17,11 @@ let within rect x1 y1 =
   else false
 
 let move_rect = Raylib.Rectangle.create 10. 100. 100. 40.
+let stay_rect2 = Raylib.Rectangle.create 10. 100. 100. 40.
 let turn_rect = Raylib.Rectangle.create 10. 150. 100. 40.
+let stay_rect = Raylib.Rectangle.create 10. 150. 100. 40.
+let start_button = Raylib.Rectangle.create 10. 200. 100. 40.
+let end_button = Raylib.Rectangle.create 10. 250. 100. 40.
 let on_screen = []
 let default_x = 10
 let default_y = 100
@@ -70,6 +74,40 @@ let turn_code_block () =
     (int_of_float (Rectangle.y block +. 5.))
     16 Color.black
 
+let testing_station2 () =
+  let block = stay_rect2 in
+  let _ = draw_rectangle_rec block Color.gold in
+  draw_text "Move Cat"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 5.))
+    16 Color.black
+
+let testing_station () =
+  let block = stay_rect in
+  let _ = draw_rectangle_rec stay_rect Color.green in
+  draw_text "Turn Cat"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 5.))
+    16 Color.black
+
+let start_button () =
+  let block = start_button in
+  let _ = change_block_position block in
+  let _ = draw_rectangle_rounded start_button 0.5 3 Color.skyblue in
+  draw_text "Start"
+    (int_of_float (Rectangle.x block +. 25.))
+    (int_of_float (Rectangle.y block +. 10.))
+    16 Color.black
+
+let end_button () =
+  let block = end_button in
+  let _ = change_block_position block in
+  let _ = draw_rectangle_rounded end_button 0.5 3 Color.skyblue in
+  draw_text "Run"
+    (int_of_float (Rectangle.x block +. 25.))
+    (int_of_float (Rectangle.y block +. 10.))
+    16 Color.black
+
 let rec loop () =
   if window_should_close () then Raylib.close_window
   else
@@ -87,7 +125,11 @@ let rec loop () =
     draw_text "Workspace"
       ((Raylib.get_screen_width () / 4) + 10)
       68 16 Color.black;
+    start_button ();
+    testing_station2 ();
     move_code_block ();
+    testing_station ();
     turn_code_block ();
+    end_button ();
     end_drawing ();
     loop ()
