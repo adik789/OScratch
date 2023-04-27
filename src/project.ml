@@ -148,6 +148,10 @@ let rec loop () =
     draw_text "OScratch" 10 10 48 Color.blue;
     draw_rectangle 0 60 (Raylib.get_screen_width ()) 3 Color.black;
     draw_rectangle
+      (Raylib.get_screen_width () - 105)
+      (Raylib.get_screen_height () - 45)
+      105 45 Color.red;
+    draw_rectangle
       (Raylib.get_screen_width () / 4)
       60 3
       (Raylib.get_screen_height ())
@@ -156,6 +160,10 @@ let rec loop () =
     draw_text "Workspace"
       ((Raylib.get_screen_width () / 4) + 10)
       68 16 Color.black;
+    draw_text "Trash Can"
+      (Raylib.get_screen_width () - 100)
+      (Raylib.get_screen_height () - 40)
+      10 Color.white;
     if
       within stay_rect2
         (float_of_int (get_mouse_x ()))
