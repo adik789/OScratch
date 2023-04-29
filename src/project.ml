@@ -6,12 +6,7 @@ let change_rect rect x y =
   Raylib.Rectangle.set_x rect x;
   Raylib.Rectangle.set_y rect y
 
-let draw_cat () =
-  Raylib.draw_texture_rec
-    (Raylib.load_texture "200px-ScratchCat-Small.png")
-    (Raylib.Rectangle.create 0. 0. 200. 200.)
-    (Raylib.Vector2.create 500. 100.)
-    Raylib.Color.white
+let draw_cat () = Cat.draw_cat ()
 
 let within rect x1 y1 =
   let open Raylib.Rectangle in
@@ -146,6 +141,16 @@ let draw_on_screen () =
   let _ = List.map (move_block Color.gold "Move Cat" Color.black) !on_screen in
   ()
 
+let catty () =
+  ref
+    {
+      (* direction = Right; *)
+      Cat.rect = Raylib.Rectangle.create 0. 0. 200. 200.;
+      Cat.texture = Raylib.load_texture "200px-ScratchCat-Small.png";
+      Cat.pos = Raylib.Vector2.create 500. 100.;
+      Cat.color = Raylib.Color.white;
+    }
+
 let rec loop () =
   if window_should_close () then Raylib.close_window
   else
@@ -189,5 +194,7 @@ let rec loop () =
     turn_code_block ();
     end_button ();
     end_drawing ();
+
     draw_cat ();
+    Cat.move_left 10.;
     loop ()
