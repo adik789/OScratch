@@ -163,6 +163,11 @@ let rec loop () =
       60 3
       (Raylib.get_screen_height ())
       Color.black;
+    draw_rectangle (*For the right most cat zone*)
+      (Raylib.get_screen_width () / 2)
+      60 3
+      (Raylib.get_screen_height ())
+      Color.black;
     draw_text "Code Blocks" 10 68 16 Color.black;
     draw_text "Workspace"
       ((Raylib.get_screen_width () / 4) + 10)
