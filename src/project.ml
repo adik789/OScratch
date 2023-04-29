@@ -6,6 +6,13 @@ let change_rect rect x y =
   Raylib.Rectangle.set_x rect x;
   Raylib.Rectangle.set_y rect y
 
+let draw_cat () =
+  Raylib.draw_texture_rec
+    (Raylib.load_texture "200px-ScratchCat-Small.png")
+    (Raylib.Rectangle.create 0. 0. 200. 200.)
+    (Raylib.Vector2.create 500. 100.)
+    Raylib.Color.white
+
 let within rect x1 y1 =
   let open Raylib.Rectangle in
   if
@@ -132,4 +139,5 @@ let rec loop () =
     turn_code_block ();
     end_button ();
     end_drawing ();
+    draw_cat ();
     loop ()
