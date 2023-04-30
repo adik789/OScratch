@@ -6,6 +6,8 @@ let change_rect rect x y =
   Raylib.Rectangle.set_x rect x;
   Raylib.Rectangle.set_y rect y
 
+let draw_cat () = Cat.draw_cat ()
+
 let within rect x1 y1 =
   let open Raylib.Rectangle in
   if
@@ -156,6 +158,11 @@ let rec loop () =
       60 3
       (Raylib.get_screen_height ())
       Color.black;
+    draw_rectangle (*For the right most cat zone*)
+      (Raylib.get_screen_width () / 2)
+      60 3
+      (Raylib.get_screen_height ())
+      Color.black;
     draw_text "Code Blocks" 10 68 16 Color.black;
     draw_text "Workspace"
       ((Raylib.get_screen_width () / 4) + 10)
@@ -177,4 +184,8 @@ let rec loop () =
     turn_code_block ();
     end_button ();
     end_drawing ();
+
+    draw_cat ();
+    (*Can test new cat features under here*)
+    (* Unix.sleep 1; Cat.change_direction (); Cat.move_right 50.; *)
     loop ()
