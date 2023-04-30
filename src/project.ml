@@ -141,16 +141,6 @@ let draw_on_screen () =
   let _ = List.map (move_block Color.gold "Move Cat" Color.black) !on_screen in
   ()
 
-let catty () =
-  ref
-    {
-      (* direction = Right; *)
-      Cat.rect = Raylib.Rectangle.create 0. 0. 200. 200.;
-      Cat.texture = Raylib.load_texture "200px-ScratchCat-Small.png";
-      Cat.pos = Raylib.Vector2.create 500. 100.;
-      Cat.color = Raylib.Color.white;
-    }
-
 let rec loop () =
   if window_should_close () then Raylib.close_window
   else
@@ -196,5 +186,6 @@ let rec loop () =
     end_drawing ();
 
     draw_cat ();
-    Cat.move_left 10.;
+    (*Can test new cat features under here*)
+    (* Unix.sleep 1; Cat.change_direction (); Cat.move_right 50.; *)
     loop ()
