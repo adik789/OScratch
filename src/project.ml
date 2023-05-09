@@ -202,6 +202,10 @@ let rec loop () =
       (get_screen_width () - 100)
       (get_screen_height () - 40)
       10 Color.white;
+    draw_text "Press \"s\" to sort"
+      ((get_screen_width () / 4) + 10)
+      (get_screen_height () - 15)
+      16 Color.blue;
     if
       within stay_rect2
         (float_of_int (get_mouse_x ()))
