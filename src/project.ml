@@ -75,14 +75,14 @@ let update_y block =
     int_of_float (Rectangle.y block)
 
 (** Changes the blocks position if the mouse is clicking on it*)
-let change_block_position block =
-  let x' = update_x block in
-  let y' = update_y block in
-  change_rect block (float_of_int x') (float_of_int y')
+let change_rect_position rect =
+  let x' = update_x rect in
+  let y' = update_y rect in
+  change_rect rect (float_of_int x') (float_of_int y')
 
 let move_block block =
   let { op; color; rect; _ } = block in
-  let _ = change_block_position rect in
+  let _ = change_rect_position rect in
   let _ = draw_rectangle_rec rect color in
   let text =
     match op with
@@ -112,7 +112,7 @@ let testing_station () =
 
 let start_button () =
   let block = start_button in
-  let _ = change_block_position block in
+  let _ = change_rect_position block in
   let _ = draw_rectangle_rounded start_button 0.5 3 Color.skyblue in
   draw_text "Start"
     (int_of_float (Rectangle.x block +. 25.))
@@ -121,7 +121,7 @@ let start_button () =
 
 let end_button () =
   let block = end_button in
-  let _ = change_block_position block in
+  let _ = change_rect_position block in
   let _ = draw_rectangle_rounded end_button 0.5 3 Color.skyblue in
   draw_text "Run"
     (int_of_float (Rectangle.x block +. 25.))
@@ -155,6 +155,28 @@ let create_turn_block () =
 let draw_on_screen () =
   let _ = List.map move_block !on_screen in
   ()
+
+let sort_exec_order () =
+  let compare_block b1 b2 =
+    let { op = _; color = _; rect = rect1; id = _ } = b1 in
+    let { op = _; color = _; rect = rect2; id = _ } = b2 in
+    let y1, y2 = (Rectangle.y rect1, Rectangle.y rect2) in
+    if y1 > y2 then 1 else if y1 < y2 then -1 else 0
+  in
+  List.sort compare_block !on_screen
+
+let sort_block_position () =
+  let sorted = sort_exec_order () in
+  let curr_y = ref 100. in
+  let format_block_pos block =
+    let { op = _; color = _; rect; id = _ } = block in
+    change_rect rect 250. !curr_y;
+    curr_y := !curr_y +. 45.
+  in
+  let _ = List.map format_block_pos sorted in
+  ()
+
+let sort_post () = if is_key_pressed S then sort_block_position ()
 
 let rec loop () =
   if window_should_close () then close_window
@@ -195,6 +217,7 @@ let rec loop () =
     testing_station2 ();
     testing_station ();
     end_button ();
+    sort_post ();
     end_drawing ();
     print_endline (string_of_int (List.length !on_screen));
     draw_cat ();
