@@ -18,6 +18,7 @@ type code_block = {
   op : operation;
   color : Color.t;
   rect : Rectangle.t;
+  mutable visible : bool;
   id : int;
 }
 
@@ -136,6 +137,7 @@ let create_move_block () =
         op = Move;
         color = Color.gold;
         rect = Rectangle.create 10. 100. 100. 40.;
+        visible = true;
         id = !block_id;
       }
       :: !on_screen
@@ -148,9 +150,24 @@ let create_turn_block () =
         op = Turn;
         color = Color.green;
         rect = Rectangle.create 10. 150. 100. 40.;
+        visible = true;
         id = !block_id;
       }
       :: !on_screen
+
+let visible_false_helper block =
+  let block_rect = block.rect in
+  if
+    Rectangle.x block_rect > float_of_int (get_screen_width () - 100)
+    && Rectangle.y block_rect < float_of_int (get_screen_height () - 40)
+  then block.visible <- false
+
+let visible_false () =
+  let _ = List.map visible_false_helper !on_screen in
+  ()
+
+let remove_block_tc () =
+  on_screen := List.filter (fun block -> block.visible = true) !on_screen
 
 let draw_on_screen () =
   let _ = List.map move_block !on_screen in
@@ -158,8 +175,8 @@ let draw_on_screen () =
 
 let sort_exec_order () =
   let compare_block b1 b2 =
-    let { op = _; color = _; rect = rect1; id = _ } = b1 in
-    let { op = _; color = _; rect = rect2; id = _ } = b2 in
+    let { op = _; color = _; rect = rect1; visible = _; id = _ } = b1 in
+    let { op = _; color = _; rect = rect2; visible = _; id = _ } = b2 in
     let y1, y2 = (Rectangle.y rect1, Rectangle.y rect2) in
     if y1 > y2 then 1 else if y1 < y2 then -1 else 0
   in
@@ -169,7 +186,7 @@ let sort_block_position () =
   let sorted = sort_exec_order () in
   let curr_y = ref 100. in
   let format_block_pos block =
-    let { op = _; color = _; rect; id = _ } = block in
+    let { op = _; color = _; visible = _; rect; id = _ } = block in
     change_rect rect 250. !curr_y;
     curr_y := !curr_y +. 45.
   in
@@ -221,6 +238,8 @@ let rec loop () =
     testing_station2 ();
     testing_station ();
     end_button ();
+    visible_false ();
+    remove_block_tc ();
     sort_post ();
     end_drawing ();
     print_endline (string_of_int (List.length !on_screen));
