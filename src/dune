@@ -1,4 +1,4 @@
 (library
- (name project)
- (public_name Project)
+ (name game)
+ (public_name Game)
  (libraries raylib unix))
