@@ -15,11 +15,12 @@ type cat = {
 let cat_width = ref 200.
 let pos_vector = Raylib.Vector2.create 500. 100.
 let cat_rect = Raylib.Rectangle.create 0. 0. !cat_width 200.
+let cat_texture () = Raylib.load_texture "200px-ScratchCat-Small.png"
 
 let init_cat () =
   {
     rect = cat_rect;
-    texture = Raylib.load_texture "200px-ScratchCat-Small.png";
+    texture = cat_texture ();
     pos = pos_vector;
     color = Raylib.Color.white;
     direction = Left;
