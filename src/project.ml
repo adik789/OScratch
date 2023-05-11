@@ -271,6 +271,8 @@ let rec loop () =
     draw_cat ();
     run_block ();
 
-    (*(*Can test new cat features under here*) Cat.change_direction ();
-      Cat.move_right 0.5;*)
+    (*Can test new cat features under here*)
+    (* Cat.change_direction (); *)
+    Cat.move_right 0.5;
+    print_float (Cat.get_x ());
     loop ()
