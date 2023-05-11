@@ -13,6 +13,7 @@ let draw_cat () = Cat.draw_cat ()
 type operation =
   | Move
   | Turn
+  | Start
 
 type code_block = {
   op : operation;
@@ -38,7 +39,7 @@ let stay_rect2 = Rectangle.create 10. 100. 100. 40.
 let stay_rect = Rectangle.create 10. 150. 100. 40.
 let start_button = Rectangle.create 10. 200. 100. 40.
 let stay_rect3 = Rectangle.create 10. 200. 100. 40.
-let end_button = Rectangle.create 10. 250. 100. 40.
+let end_button = Rectangle.create 250. 10. 100. 40.
 let stay_rect4 = Rectangle.create 10. 200. 100. 40.
 let on_screen = ref []
 let default_x = 10
@@ -89,6 +90,7 @@ let move_block block =
     match op with
     | Move -> "Move Cat"
     | Turn -> "Turn Cat"
+    | Start -> "Start "
   in
   draw_text text
     (int_of_float (Rectangle.x rect +. 10.))
@@ -111,7 +113,7 @@ let testing_station () =
     (int_of_float (Rectangle.y block +. 5.))
     16 Color.black
 
-let start_button () =
+let start_button2 () =
   let block = start_button in
   let _ = change_rect_position block in
   let _ = draw_rectangle_rounded start_button 0.5 3 Color.skyblue in
@@ -120,14 +122,18 @@ let start_button () =
     (int_of_float (Rectangle.y block +. 10.))
     16 Color.black
 
-let end_button () =
-  let block = end_button in
-  let _ = change_rect_position block in
-  let _ = draw_rectangle_rounded end_button 0.5 3 Color.skyblue in
-  draw_text "Run"
-    (int_of_float (Rectangle.x block +. 25.))
-    (int_of_float (Rectangle.y block +. 10.))
-    16 Color.black
+let create_start () =
+  if is_mouse_button_pressed MouseButton.Left && not !block_selected then
+    let _ = block_id := !block_id + 1 in
+    on_screen :=
+      {
+        op = Start;
+        color = Color.skyblue;
+        rect = Rectangle.create 10. 200. 100. 40.;
+        visible = true;
+        id = !block_id;
+      }
+      :: !on_screen
 
 let create_move_block () =
   if is_mouse_button_pressed MouseButton.Left && not !block_selected then
@@ -193,7 +199,27 @@ let sort_block_position () =
   let _ = List.map format_block_pos sorted in
   ()
 
+let get_op block = block.op
+
+let run_opp op =
+  match op with
+  | Turn ->
+      Cat.change_direction ();
+      ()
+  | Move ->
+      Cat.move_right 2.0;
+      ()
+  | _ -> ()
+
+let rec run_code_blocks lst =
+  match lst with
+  | [] -> ()
+  | h :: t ->
+      run_opp (get_op h);
+      run_code_blocks t
+
 let sort_post () = if is_key_pressed S then sort_block_position ()
+let run_block () = if is_key_pressed R then run_code_blocks !on_screen
 
 let rec loop () =
   if window_should_close () then close_window
@@ -234,17 +260,17 @@ let rec loop () =
         (float_of_int (get_mouse_y ()))
     then create_turn_block ();
     draw_on_screen ();
-    start_button ();
+    start_button2 ();
     testing_station2 ();
     testing_station ();
-    end_button ();
     visible_false ();
     remove_block_tc ();
     sort_post ();
     end_drawing ();
     print_endline (string_of_int (List.length !on_screen));
     draw_cat ();
-    (*Can test new cat features under here*)
-    Cat.change_direction ();
-    Cat.move_right 0.5;
+    run_block ();
+
+    (*(*Can test new cat features under here*) Cat.change_direction ();
+      Cat.move_right 0.5;*)
     loop ()
