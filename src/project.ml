@@ -212,10 +212,6 @@ let run_text () =
     16 Color.blue;
   draw_text "Code Blocks" 10 68 16 Color.black;
   draw_text "Workspace" ((get_screen_width () / 4) + 10) 68 16 Color.black;
-  draw_text "Trash Can"
-    (get_screen_width () - 100)
-    (get_screen_height () - 40)
-    10 Color.white;
   draw_text "OScratch" 10 10 48 Color.blue
 
 let sort_post () = if is_key_pressed S then sort_block_position ()
@@ -248,13 +244,17 @@ let rec loop () =
         (float_of_int (get_mouse_x ()))
         (float_of_int (get_mouse_y ()))
     then create_turn_block ();
+    draw_text "Trash Can"
+      (get_screen_width () - 100)
+      (get_screen_height () - 40)
+      10 Color.white;
+    run_text ();
     draw_on_screen ();
     start_button2 ();
     testing_station2 ();
     testing_station ();
     visible_false ();
     remove_block_tc ();
-    run_text ();
     sort_post ();
     end_drawing ();
     print_endline (string_of_int (List.length !on_screen));
