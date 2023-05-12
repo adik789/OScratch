@@ -37,7 +37,7 @@ let within rect x1 y1 =
 
 let stay_rect2 = Rectangle.create 10. 100. 100. 40.
 let stay_rect = Rectangle.create 10. 150. 100. 40.
-let start_button = Rectangle.create 10. 200. 100. 40.
+let start_button = Rectangle.create 250. 100. 100. 40.
 let stay_rect3 = Rectangle.create 10. 200. 100. 40.
 let end_button = Rectangle.create 250. 10. 100. 40.
 let stay_rect4 = Rectangle.create 10. 200. 100. 40.
@@ -115,25 +115,11 @@ let testing_station () =
 
 let start_button2 () =
   let block = start_button in
-  let _ = change_rect_position block in
   let _ = draw_rectangle_rounded start_button 0.5 3 Color.skyblue in
   draw_text "Start"
     (int_of_float (Rectangle.x block +. 25.))
     (int_of_float (Rectangle.y block +. 10.))
     16 Color.black
-
-let create_start () =
-  if is_mouse_button_pressed MouseButton.Left && not !block_selected then
-    let _ = block_id := !block_id + 1 in
-    on_screen :=
-      {
-        op = Start;
-        color = Color.skyblue;
-        rect = Rectangle.create 10. 200. 100. 40.;
-        visible = true;
-        id = !block_id;
-      }
-      :: !on_screen
 
 let create_move_block () =
   if is_mouse_button_pressed MouseButton.Left && not !block_selected then
@@ -190,7 +176,7 @@ let sort_exec_order () =
 
 let sort_block_position () =
   let sorted = sort_exec_order () in
-  let curr_y = ref 100. in
+  let curr_y = ref 140. in
   let format_block_pos block =
     let { op = _; color = _; visible = _; rect; id = _ } = block in
     change_rect rect 250. !curr_y;
@@ -218,6 +204,20 @@ let rec run_code_blocks lst =
       run_opp (get_op h);
       run_code_blocks t
 
+let run_text () =
+  draw_text "Press \"r\" to run" (get_screen_width () - 200) 45 16 Color.purple;
+  draw_text "Press \"s\" to sort"
+    ((get_screen_width () / 4) + 10)
+    (get_screen_height () - 15)
+    16 Color.blue;
+  draw_text "Code Blocks" 10 68 16 Color.black;
+  draw_text "Workspace" ((get_screen_width () / 4) + 10) 68 16 Color.black;
+  draw_text "Trash Can"
+    (get_screen_width () - 100)
+    (get_screen_height () - 40)
+    10 Color.white;
+  draw_text "OScratch" 10 10 48 Color.blue
+
 let sort_post () = if is_key_pressed S then sort_block_position ()
 let run_block () = if is_key_pressed R then run_code_blocks !on_screen
 
@@ -226,8 +226,8 @@ let rec loop () =
   else
     let _ = 10 in
     begin_drawing ();
+    run_text ();
     clear_background Color.raywhite;
-    draw_text "OScratch" 10 10 48 Color.blue;
     draw_rectangle 0 60 (get_screen_width ()) 3 Color.black;
     draw_rectangle
       (get_screen_width () - 105)
@@ -239,16 +239,6 @@ let rec loop () =
     draw_rectangle (*For the right most cat zone*)
       (get_screen_width () / 2)
       60 3 (get_screen_height ()) Color.black;
-    draw_text "Code Blocks" 10 68 16 Color.black;
-    draw_text "Workspace" ((get_screen_width () / 4) + 10) 68 16 Color.black;
-    draw_text "Trash Can"
-      (get_screen_width () - 100)
-      (get_screen_height () - 40)
-      10 Color.white;
-    draw_text "Press \"s\" to sort"
-      ((get_screen_width () / 4) + 10)
-      (get_screen_height () - 15)
-      16 Color.blue;
     if
       within stay_rect2
         (float_of_int (get_mouse_x ()))
@@ -273,6 +263,5 @@ let rec loop () =
 
     (*Can test new cat features under here*)
     (* Cat.change_direction (); *)
-    Cat.move_right 0.5;
-    print_float (Cat.get_x ());
+    (*Cat.move_right 0.5; print_float (Cat.get_x ());*)
     loop ()
