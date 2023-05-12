@@ -159,7 +159,9 @@ let visible_false () =
   ()
 
 let remove_block_tc () =
-  on_screen := List.filter (fun block -> block.visible = true) !on_screen
+  on_screen := List.filter (fun block -> block.visible = true) !on_screen;
+  block_selected := false;
+  block_selected2 := false
 
 let draw_on_screen () =
   let _ = List.map move_block !on_screen in
