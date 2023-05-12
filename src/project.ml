@@ -176,7 +176,7 @@ let sort_exec_order () =
 
 let sort_block_position () =
   let sorted = sort_exec_order () in
-  let curr_y = ref 140. in
+  let curr_y = ref 150. in
   let format_block_pos block =
     let { op = _; color = _; visible = _; rect; id = _ } = block in
     change_rect rect 250. !curr_y;
@@ -226,7 +226,6 @@ let rec loop () =
   else
     let _ = 10 in
     begin_drawing ();
-    run_text ();
     clear_background Color.raywhite;
     draw_rectangle 0 60 (get_screen_width ()) 3 Color.black;
     draw_rectangle
@@ -255,6 +254,7 @@ let rec loop () =
     testing_station ();
     visible_false ();
     remove_block_tc ();
+    run_text ();
     sort_post ();
     end_drawing ();
     print_endline (string_of_int (List.length !on_screen));
