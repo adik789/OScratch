@@ -21,9 +21,11 @@ type code_block = {
   rect : Rectangle.t;
   mutable visible : bool;
   id : int;
+  test : bool;
 }
 
 let block_id = ref 0
+let block_id_test = ref 0
 
 let within rect x1 y1 =
   let open Rectangle in
@@ -42,6 +44,7 @@ let stay_rect3 = Rectangle.create 10. 200. 100. 40.
 let end_button = Rectangle.create 250. 10. 100. 40.
 let stay_rect4 = Rectangle.create 10. 200. 100. 40.
 let on_screen = ref []
+let string_on_screen = ref []
 let default_x = 10
 let default_y = 100
 let defaul_spacing = 100
@@ -131,6 +134,7 @@ let create_move_block () =
         rect = Rectangle.create 10. 100. 100. 40.;
         visible = true;
         id = !block_id;
+        test = false;
       }
       :: !on_screen
 
@@ -144,8 +148,31 @@ let create_turn_block () =
         rect = Rectangle.create 10. 150. 100. 40.;
         visible = true;
         id = !block_id;
+        test = false;
       }
       :: !on_screen
+
+let create_turn_test () =
+  let _ = block_id_test := !block_id_test + 1 in
+  {
+    op = Turn;
+    color = Color.green;
+    rect = Rectangle.create 10. 150. 100. 40.;
+    visible = true;
+    id = !block_id_test;
+    test = true;
+  }
+
+let create_move_test () =
+  let _ = block_id_test := !block_id_test + 1 in
+  {
+    op = Move;
+    color = Color.gold;
+    rect = Rectangle.create 10. 150. 100. 40.;
+    visible = true;
+    id = !block_id_test;
+    test = true;
+  }
 
 let visible_false_helper block =
   let block_rect = block.rect in
@@ -169,8 +196,12 @@ let draw_on_screen () =
 
 let sort_exec_order () =
   let compare_block b1 b2 =
-    let { op = _; color = _; rect = rect1; visible = _; id = _ } = b1 in
-    let { op = _; color = _; rect = rect2; visible = _; id = _ } = b2 in
+    let { op = _; color = _; rect = rect1; visible = _; id = _; test = _ } =
+      b1
+    in
+    let { op = _; color = _; rect = rect2; visible = _; id = _; test = _ } =
+      b2
+    in
     let y1, y2 = (Rectangle.y rect1, Rectangle.y rect2) in
     if y1 > y2 then 1 else if y1 < y2 then -1 else 0
   in
@@ -180,7 +211,7 @@ let sort_block_position () =
   let sorted = sort_exec_order () in
   let curr_y = ref 150. in
   let format_block_pos block =
-    let { op = _; color = _; visible = _; rect; id = _ } = block in
+    let { op = _; color = _; visible = _; rect; id = _; test = _ } = block in
     change_rect rect 250. !curr_y;
     curr_y := !curr_y +. 45.
   in
@@ -188,6 +219,12 @@ let sort_block_position () =
   ()
 
 let get_op block = block.op
+
+let text_grab block =
+  match get_op block with
+  | Turn -> "Turn"
+  | Move -> "Move"
+  | _ -> "WRONG"
 
 let run_opp op =
   match op with
@@ -203,8 +240,16 @@ let rec run_code_blocks lst =
   match lst with
   | [] -> ()
   | h :: t ->
-      run_opp (get_op h);
+      if h.test = true then string_on_screen := text_grab h :: !string_on_screen
+      else run_opp (get_op h);
       run_code_blocks t
+
+let grab_string_screen () = !string_on_screen
+
+let rec list_to_string lst =
+  match lst with
+  | [] -> ""
+  | h :: t -> h ^ " " ^ list_to_string t
 
 let run_text () =
   draw_text "Press \"r\" to run" (get_screen_width () - 200) 45 16 Color.purple;
