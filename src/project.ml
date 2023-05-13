@@ -14,6 +14,7 @@ type operation =
   | Move
   | Turn
   | Start
+  | Wait
 
 type code_block = {
   op : operation;
@@ -39,6 +40,7 @@ let within rect x1 y1 =
 
 let stay_rect2 = Rectangle.create 10. 100. 100. 40.
 let stay_rect = Rectangle.create 10. 150. 100. 40.
+let stay_rect_wait = Rectangle.create 10. 200. 100. 40.
 let start_button = Rectangle.create 250. 100. 100. 40.
 let stay_rect3 = Rectangle.create 10. 200. 100. 40.
 let end_button = Rectangle.create 250. 10. 100. 40.
@@ -94,10 +96,19 @@ let move_block block =
     | Move -> "Move Cat"
     | Turn -> "Turn Cat"
     | Start -> "Start "
+    | Wait -> "Wait"
   in
   draw_text text
     (int_of_float (Rectangle.x rect +. 10.))
     (int_of_float (Rectangle.y rect +. 5.))
+    16 Color.black
+
+let testing_station3 () =
+  let block = stay_rect_wait in
+  let _ = draw_rectangle_rec block Color.purple in
+  draw_text "Wait"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 5.))
     16 Color.black
 
 let testing_station2 () =
@@ -146,6 +157,20 @@ let create_turn_block () =
         op = Turn;
         color = Color.green;
         rect = Rectangle.create 10. 150. 100. 40.;
+        visible = true;
+        id = !block_id;
+        test = false;
+      }
+      :: !on_screen
+
+let create_wait_block () =
+  if is_mouse_button_pressed MouseButton.Left && not !block_selected then
+    let _ = block_id := !block_id + 1 in
+    on_screen :=
+      {
+        op = Wait;
+        color = Color.purple;
+        rect = Rectangle.create 10. 200. 100. 40.;
         visible = true;
         id = !block_id;
         test = false;
@@ -234,6 +259,7 @@ let run_opp op =
   | Move ->
       Cat.move_right 2.0;
       ()
+  | Wait -> wait_time 5.0
   | _ -> ()
 
 let rec run_code_blocks lst =
@@ -291,6 +317,11 @@ let rec loop () =
         (float_of_int (get_mouse_x ()))
         (float_of_int (get_mouse_y ()))
     then create_turn_block ();
+    if
+      within stay_rect_wait
+        (float_of_int (get_mouse_x ()))
+        (float_of_int (get_mouse_y ()))
+    then create_wait_block ();
     draw_text "Trash Can"
       (get_screen_width () - 100)
       (get_screen_height () - 40)
@@ -300,6 +331,7 @@ let rec loop () =
     start_button2 ();
     testing_station2 ();
     testing_station ();
+    testing_station3 ();
     visible_false ();
     remove_block_tc ();
     sort_post ();
