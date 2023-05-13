@@ -238,6 +238,7 @@ let tests = [
   test_text_grab "test2" (turn_0_0) "Turn"; 
   test_list_string "testing list to string func" ["hello"] "hello ";
   test_list_string "testing for more than 1 thing" ["hello"; "people"] "hello people "; 
+  test_list_string "testing for 3 things" ["hello"; "people" ; "pt2"] "hello people pt2 ";
   test_list_string "testing empty list" [] ""; 
   test_turn_block "testing test blocks" "Turn";
   test_run_blocks "test 2 turn blocks" [turn_0_0; turn_0_0] "Turn Turn ";

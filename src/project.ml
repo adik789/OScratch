@@ -22,6 +22,7 @@ let stay_rect_wait = Rectangle.create 10. 200. 100. 40.
 let start_button = Rectangle.create 250. 100. 100. 40.
 let on_screen = ref []
 let string_on_screen = ref []
+let ref_test = ref 0
 let block_selected_x = ref false
 let block_selected_y = ref false
 
@@ -254,6 +255,20 @@ let rec run_code_blocks lst =
       else run_opp (get_op h);
       run_code_blocks t
 
+(*let update_test () = ref_test := sort_exec_order ()*)
+
+let run_head () =
+  let sorted = sort_exec_order !on_screen in
+  let block = List.nth sorted !ref_test in
+  (if block.test = false then run_opp (get_op (List.nth sorted !ref_test))
+  else
+    let _ = text_grab block :: !string_on_screen in
+    ());
+  ref_test := !ref_test + 1
+
+let update_ref_test () =
+  if !ref_test >= List.length !on_screen then ref_test := 0 else ()
+
 let run_text () =
   draw_text "Press \"r\" to run" (get_screen_width () - 200) 45 16 Color.purple;
   draw_text "Press \"s\" to sort"
@@ -262,10 +277,12 @@ let run_text () =
     16 Color.blue;
   draw_text "Code Blocks" 10 68 16 Color.black;
   draw_text "Workspace" ((get_screen_width () / 4) + 10) 68 16 Color.black;
-  draw_text "OScratch" 10 10 48 Color.blue
+  draw_text "OScratch" 10 10 48 Color.blue;
+  draw_text "Press \"h\" to step" (get_screen_width () - 200) 30 16 Color.pink
 
 let sort_post () = if is_key_pressed S then sort_block_position ()
 let run_block () = if is_key_pressed R then run_code_blocks !on_screen
+let run_head_block () = if is_key_pressed H then run_head ()
 
 let setup_view () =
   clear_background Color.raywhite;
@@ -305,6 +322,8 @@ let rec loop () =
     print_endline (string_of_int (List.length !on_screen));
     draw_cat ();
     run_block ();
+    update_ref_test ();
+    run_head_block ();
 
     (*Can test new cat features under here*)
     (* Cat.change_direction (); *)
