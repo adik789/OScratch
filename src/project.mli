@@ -54,11 +54,12 @@ val sort_exec_order : code_block list -> code_block list
     to the top are thus placed at the front of the list, establishing at
     top-down execution order *)
 
-val sort_block_position : unit -> unit
+val sort_block_position : code_block list -> Raylib.Rectangle.t list
 (** [sort_block_position ()] formats all code_blocks in on_screen, so that they
     are organized by execution order, and change the coordinates of all
     code_block rectanlges so that they are spaced evenly and aligned in parallel
-    within the code space *)
+    within the code space, and returns a list of the sorted rectangles for the
+    code_blocks *)
 
 val run_code_blocks : code_block list -> unit
 (**[run_code_blocks lst] runs all the code blocks in the given lst of type

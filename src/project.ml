@@ -218,16 +218,16 @@ let sort_exec_order on_screen =
   in
   List.sort compare_block on_screen
 
-let sort_block_position () =
-  let sorted = sort_exec_order !on_screen in
+let sort_block_position on_screen =
+  let sorted = sort_exec_order on_screen in
   let curr_y = ref 150. in
   let format_block_pos block =
     let { op = _; color = _; visible = _; rect; id = _; test = _ } = block in
     change_rect rect 250. !curr_y;
-    curr_y := !curr_y +. 45.
+    curr_y := !curr_y +. 45.;
+    rect
   in
-  let _ = List.map format_block_pos sorted in
-  ()
+  List.map format_block_pos sorted
 
 let get_op block = block.op
 
@@ -280,7 +280,11 @@ let run_text () =
   draw_text "OScratch" 10 10 48 Color.blue;
   draw_text "Press \"h\" to step" (get_screen_width () - 200) 30 16 Color.pink
 
-let sort_post () = if is_key_pressed S then sort_block_position ()
+let sort_post () =
+  if is_key_pressed S then
+    let _ = sort_block_position !on_screen in
+    ()
+
 let run_block () = if is_key_pressed R then run_code_blocks !on_screen
 let run_head_block () = if is_key_pressed H then run_head ()
 

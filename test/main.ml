@@ -36,6 +36,17 @@ let test_sort_exec (name: string) (lst: Project.code_block list)
   assert_equal (Project.(lst |> sort_exec_order |> List.map text_grab
   |> list_to_string)) (expected_output) ~printer: String.escaped
 
+let rec check_x_align lst =
+  match lst with
+  | [] -> true
+  | [_] -> true
+  | a::b::t ->
+      if (Rectangle.x a) = (Rectangle.x b) then check_x_align (b::t) else false
+
+let test_sort_block_pos (name: string) (lst: Project.code_block list) : test =
+  name >:: fun _ ->
+    assert_equal (lst |> Project.sort_block_position |> check_x_align) (true)
+
 let test_cat_floats (name: string) (action : unit) (f : unit -> float) (exp_value : float) = 
   (* Cat.move_right 10.; *)
   action;
@@ -234,6 +245,74 @@ let sort_exec_tests = [
   test_sort_exec "A Lot of Blocks Unsorted" sorted_100 sorted_100_string;
   test_sort_exec "A Lot of Blocks Unsorted" unsorted_100 sorted_100_string;
 ]
+
+let turn_100_0 = Project.create_turn_test 100. 0.
+let turn_10_2 = Project.create_turn_test 10. 2.
+let turn_50_2 = Project.create_turn_test 50. 4.
+
+let unaligned_100 = [
+  Project.create_wait_test 1. 0.; Project.create_turn_test 2. 0.;
+  Project.create_wait_test 3. 0.; Project.create_turn_test 4. 0.;
+  Project.create_wait_test 4. 0.; Project.create_turn_test 6. 0.;
+  Project.create_wait_test 7. 0.; Project.create_turn_test 8. 0.;
+  Project.create_wait_test 9. 0.; Project.create_turn_test 10. 0.;
+  Project.create_wait_test 11. 0.; Project.create_turn_test 12. 0.;
+  Project.create_wait_test 13. 0.; Project.create_turn_test 14. 0.;
+  Project.create_wait_test 14. 0.; Project.create_turn_test 16. 0.;
+  Project.create_wait_test 17. 0.; Project.create_turn_test 18. 0.;
+  Project.create_wait_test 19. 0.; Project.create_turn_test 20. 0.;
+  Project.create_wait_test 21. 0.; Project.create_turn_test 22. 0.;
+  Project.create_wait_test 23. 0.; Project.create_turn_test 24. 0.;
+  Project.create_wait_test 24. 0.; Project.create_turn_test 26. 0.;
+  Project.create_wait_test 27. 0.; Project.create_turn_test 28. 0.;
+  Project.create_wait_test 29. 0.; Project.create_turn_test 30. 0.;
+  Project.create_wait_test 31. 0.; Project.create_turn_test 32. 0.;
+  Project.create_wait_test 33. 0.; Project.create_turn_test 34. 0.;
+  Project.create_wait_test 34. 0.; Project.create_turn_test 36. 0.;
+  Project.create_wait_test 37. 0.; Project.create_turn_test 38. 0.;
+  Project.create_wait_test 39. 0.; Project.create_turn_test 40. 0.;
+  Project.create_wait_test 41. 0.; Project.create_turn_test 42. 0.;
+  Project.create_wait_test 43. 0.; Project.create_turn_test 44. 0.;
+  Project.create_wait_test 44. 0.; Project.create_turn_test 46. 0.;
+  Project.create_wait_test 47. 0.; Project.create_turn_test 48. 0.;
+  Project.create_wait_test 49. 0.; Project.create_turn_test 50. 0.;
+  Project.create_wait_test 51. 0.; Project.create_turn_test 52. 0.;
+  Project.create_wait_test 53. 0.; Project.create_turn_test 54. 0.;
+  Project.create_wait_test 54. 0.; Project.create_turn_test 56. 0.;
+  Project.create_wait_test 57. 0.; Project.create_turn_test 58. 0.;
+  Project.create_wait_test 59. 0.; Project.create_turn_test 60. 0.;
+  Project.create_wait_test 61. 0.; Project.create_turn_test 62. 0.;
+  Project.create_wait_test 63. 0.; Project.create_turn_test 64. 0.;
+  Project.create_wait_test 64. 0.; Project.create_turn_test 66. 0.;
+  Project.create_wait_test 67. 0.; Project.create_turn_test 68. 0.;
+  Project.create_wait_test 69. 0.; Project.create_turn_test 70. 0.;
+  Project.create_wait_test 71. 0.; Project.create_turn_test 72. 0.;
+  Project.create_wait_test 73. 0.; Project.create_turn_test 74. 0.;
+  Project.create_wait_test 74. 0.; Project.create_turn_test 76. 0.;
+  Project.create_wait_test 77. 0.; Project.create_turn_test 78. 0.;
+  Project.create_wait_test 79. 0.; Project.create_turn_test 80. 0.;
+  Project.create_wait_test 81. 0.; Project.create_turn_test 82. 0.;
+  Project.create_wait_test 83. 0.; Project.create_turn_test 84. 0.;
+  Project.create_wait_test 84. 0.; Project.create_turn_test 86. 0.;
+  Project.create_wait_test 87. 0.; Project.create_turn_test 88. 0.;
+  Project.create_wait_test 89. 0.; Project.create_turn_test 90. 0.;
+  Project.create_wait_test 91. 0.; Project.create_turn_test 92. 0.;
+  Project.create_wait_test 93. 0.; Project.create_turn_test 94. 0.;
+  Project.create_wait_test 94. 0.; Project.create_turn_test 96. 0.;
+  Project.create_wait_test 97. 0.; Project.create_turn_test 98. 0.;
+  Project.create_wait_test 99. 0.; Project.create_turn_test 100. 0.;
+]
+
+let sort_block_pos_tests = [
+  test_sort_block_pos "Empty List" [];
+  test_sort_block_pos "turn at 0 0" [turn_0_0];
+  test_sort_block_pos "move at 0 1" [move_0_1];
+  test_sort_block_pos "Aligned X values" [move_0_1; turn_0_0; move_0_1];
+  test_sort_block_pos "Unaligned X values" [turn_100_0; turn_10_2; turn_50_2];
+  test_sort_block_pos "Aligned X 10" sorted_10;
+  test_sort_block_pos "Aligned X 100" sorted_100;
+  test_sort_block_pos "Unaligned X 100" unal;
+]
 let tests = [
   test_text_grab "test2" (turn_0_0) "Turn"; 
   test_list_string "testing list to string func" ["hello"] "hello ";
@@ -250,6 +329,7 @@ let suite = "suite" >::: List.flatten [
   change_rect_tests;
   within_tests;
   sort_exec_tests;
+  sort_block_pos_tests;
   tests;
   cat_float_tests;
   ]
