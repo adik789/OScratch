@@ -61,6 +61,11 @@ val sort_block_position : unit -> unit
     within the code space *)
 
 val run_code_blocks : code_block list -> unit
+(**[run_code_blocks lst] runs all the code blocks in the given lst of type
+   [code_block] if their test attribute = false, if the code_block has the
+   attribute test = true, then it will not run on the GUI instead it will be ran
+   through [grab_text] and the result will be appended to the string_on_screen
+   ref *)
 
 val setup_view : unit -> unit
 (** [setup_view ()] initializes the sections of the OScratch program, as well as
@@ -74,8 +79,20 @@ val loop : unit -> unit -> unit
   *Funtions for Testing *)
 
 val create_move_test : unit -> code_block
+(** [create_move_test ()] makes a testing code block with operation type Move *)
+
 val create_turn_test : unit -> code_block
+(**[create_turn_test ()] makes a testing code block with operation type Turn *)
+
 val list_to_string : string list -> string
+(** [list_to_string lst] returns the contents of lst as a string Example: lst =
+    [ "hello" ; "friend"] then the result = "hello friend "*)
+
 val text_grab : code_block -> string
+(** [text_grab block] takes in a code block and then returns the operation type
+    as a string (Turn -> "Turn", Move -> "Move", etc...) *)
+
 val grab_string_screen : unit -> string list
+(** [grab_string_screen ()] returns the accumulated string_on_screen ref *)
+
 (**********************************************************************)

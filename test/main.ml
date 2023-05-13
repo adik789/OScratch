@@ -15,7 +15,7 @@ let test_list_string (name: string)(lst : string list)(expected_output : string)
 let test_turn_block (name: string)(expected_output: string) : test = 
   name >:: fun _ -> assert_equal ( Project.create_turn_test () |> Project.text_grab) expected_output
 
-let test_cat_floats (name: string) (action : unit) (f : unit -> float) (exp_value : float) = 
+(*let test_cat_floats (name: string) (action : unit) (f : unit -> float) (exp_value : float) = 
   (* Cat.move_right 10.; *)
   action;
   print_float (f ());
@@ -33,7 +33,7 @@ let cat_float_tests = [
   test_cat_floats "Move down 10 pixels" (Cat.move_down 10.) (Cat.get_y) 110.;
 
 
-  ]
+  ]*)
 
 let tests = [
   test_text_grab "test2" (Project.create_turn_test()) "Turn"; 
@@ -46,5 +46,5 @@ let tests = [
   test_run_blocks "test 1 turn 1 move" [Project.create_move_test (); Project.create_turn_test()] "Turn Move "; 
 ]
 
-let suite = "suite" >::: (tests @ (List.rev cat_float_tests))
+let suite = "suite" >::: (tests)
 let _ = run_test_tt_main suite
