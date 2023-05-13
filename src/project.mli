@@ -48,11 +48,11 @@ val draw_on_screen : unit -> unit
     screen, and draws all code_block rectangles in on_screen onto the GUI, with
     updated coordinates *)
 
-val sort_exec_order : unit -> code_block list
-(** [sort_exec_order ()] sorts on_screen so that the code_blocks are organized
-    according to thier y-coordinate position on the GUI. Blocks closer to the
-    top are thus placed at the front of the list, establishing at top-down
-    execution order *)
+val sort_exec_order : code_block list -> code_block list
+(** [sort_exec_order on_screen] sorts on_screen so that the code_blocks are
+    organized according to thier y-coordinate position on the GUI. Blocks closer
+    to the top are thus placed at the front of the list, establishing at
+    top-down execution order *)
 
 val sort_block_position : unit -> unit
 (** [sort_block_position ()] formats all code_blocks in on_screen, so that they
@@ -78,10 +78,10 @@ val loop : unit -> unit -> unit
 (**********************************************************************
   *Funtions for Testing *)
 
-val create_move_test : unit -> code_block
+val create_move_test : float -> float -> code_block
 (** [create_move_test ()] makes a testing code block with operation type Move *)
 
-val create_turn_test : unit -> code_block
+val create_turn_test : float -> float -> code_block
 (**[create_turn_test ()] makes a testing code block with operation type Turn *)
 
 val list_to_string : string list -> string

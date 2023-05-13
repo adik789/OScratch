@@ -204,7 +204,7 @@ let draw_on_screen () =
   let _ = List.map move_block !on_screen in
   ()
 
-let sort_exec_order () =
+let sort_exec_order on_screen =
   let compare_block b1 b2 =
     let { op = _; color = _; rect = rect1; visible = _; id = _; test = _ } =
       b1
@@ -215,10 +215,10 @@ let sort_exec_order () =
     let y1, y2 = (Rectangle.y rect1, Rectangle.y rect2) in
     if y1 > y2 then 1 else if y1 < y2 then -1 else 0
   in
-  List.sort compare_block !on_screen
+  List.sort compare_block on_screen
 
 let sort_block_position () =
-  let sorted = sort_exec_order () in
+  let sorted = sort_exec_order !on_screen in
   let curr_y = ref 150. in
   let format_block_pos block =
     let { op = _; color = _; visible = _; rect; id = _; test = _ } = block in
@@ -234,7 +234,7 @@ let text_grab block =
   match get_op block with
   | Turn -> "Turn"
   | Move -> "Move"
-  | _ -> "WRONG"
+  | Wait -> "Wait"
 
 let run_opp op =
   match op with
@@ -318,23 +318,34 @@ let rec list_to_string lst =
   | [] -> ""
   | h :: t -> h ^ " " ^ list_to_string t
 
-let create_turn_test () =
+let create_turn_test x y =
   let _ = block_id_test := !block_id_test + 1 in
   {
     op = Turn;
     color = Color.green;
-    rect = Rectangle.create 10. 150. 100. 40.;
+    rect = Rectangle.create x y 100. 40.;
     visible = true;
     id = !block_id_test;
     test = true;
   }
 
-let create_move_test () =
+let create_move_test x y =
   let _ = block_id_test := !block_id_test + 1 in
   {
     op = Move;
     color = Color.gold;
-    rect = Rectangle.create 10. 150. 100. 40.;
+    rect = Rectangle.create x y 100. 40.;
+    visible = true;
+    id = !block_id_test;
+    test = true;
+  }
+
+let create_wait_test x y =
+  let _ = block_id_test := !block_id_test + 1 in
+  {
+    op = Wait;
+    color = Color.purple;
+    rect = Rectangle.create x y 100. 40.;
     visible = true;
     id = !block_id_test;
     test = true;
