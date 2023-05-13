@@ -84,6 +84,8 @@ val create_move_test : float -> float -> code_block
 val create_turn_test : float -> float -> code_block
 (**[create_turn_test ()] makes a testing code block with operation type Turn *)
 
+val create_wait_test : float -> float -> code_block
+
 val list_to_string : string list -> string
 (** [list_to_string lst] returns the contents of lst as a string Example: lst =
     [ "hello" ; "friend"] then the result = "hello friend "*)
