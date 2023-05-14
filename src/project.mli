@@ -79,7 +79,7 @@ val loop : unit -> unit -> unit
 (**********************************************************************
   *Funtions for Testing *)
 
-val create_move_test : float -> float -> code_block
+val create_right_test : float -> float -> code_block
 (** [create_move_test ()] makes a testing code block with operation type Move *)
 
 val create_turn_test : float -> float -> code_block

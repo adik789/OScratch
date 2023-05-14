@@ -1,7 +1,10 @@
 open Raylib
 
 type operation =
-  | Move
+  | Right
+  | Left
+  | Up
+  | Down
   | Turn
   | Wait
 
@@ -14,12 +17,16 @@ type code_block = {
   test : bool;
 }
 
+let default_move = 5.0
 let block_id = ref 0
 let block_id_test = ref 0
-let stay_rect_move = Rectangle.create 10. 100. 100. 40.
-let stay_rect_turn = Rectangle.create 10. 150. 100. 40.
-let stay_rect_wait = Rectangle.create 10. 200. 100. 40.
-let start_button = Rectangle.create 250. 100. 100. 40.
+let stay_rect_right = Rectangle.create 10. 100. 100. 40.
+let stay_rect_left = Rectangle.create 10. 150. 100. 40.
+let stay_rect_up = Rectangle.create 10. 200. 100. 40.
+let stay_rect_down = Rectangle.create 10. 250. 100. 40.
+let stay_rect_turn = Rectangle.create 10. 300. 100. 40.
+let stay_rect_wait = Rectangle.create 10. 350. 100. 40.
+let start_button = Rectangle.create 275. 100. 100. 40.
 let on_screen = ref []
 let string_on_screen = ref []
 let ref_test = ref 0
@@ -27,7 +34,7 @@ let block_selected_x = ref false
 let block_selected_y = ref false
 
 let setup () =
-  init_window 800 450 "[core] example - basic window";
+  init_window 1000 800 "[core] example - basic window";
   set_target_fps 60
 
 let draw_cat () = Cat.draw_cat ()
@@ -79,7 +86,7 @@ let change_rect_position rect =
   let y' = update_y rect in
   change_rect rect (float_of_int x') (float_of_int y')
 
-let testing_station3 () =
+let testing_station_wait () =
   let block = stay_rect_wait in
   let _ = draw_rectangle_rec block Color.purple in
   draw_text "Wait"
@@ -87,15 +94,39 @@ let testing_station3 () =
     (int_of_float (Rectangle.y block +. 5.))
     16 Color.black
 
-let testing_station2 () =
-  let block = stay_rect_move in
+let testing_station_right () =
+  let block = stay_rect_right in
   let _ = draw_rectangle_rec block Color.gold in
-  draw_text "Move Cat"
+  draw_text "Move Right"
     (int_of_float (Rectangle.x block +. 10.))
     (int_of_float (Rectangle.y block +. 5.))
     16 Color.black
 
-let testing_station () =
+let testing_station_left () =
+  let block = stay_rect_left in
+  let _ = draw_rectangle_rec block Color.orange in
+  draw_text "Move Left"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 5.))
+    16 Color.black
+
+let testing_station_up () =
+  let block = stay_rect_up in
+  let _ = draw_rectangle_rec block Color.red in
+  draw_text "Move Up"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 5.))
+    16 Color.black
+
+let testing_station_down () =
+  let block = stay_rect_down in
+  let _ = draw_rectangle_rec block Color.blue in
+  draw_text "Move Down"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 5.))
+    16 Color.black
+
+let testing_station_turn () =
   let block = stay_rect_turn in
   let _ = draw_rectangle_rec stay_rect_turn Color.green in
   draw_text "Turn Cat"
@@ -111,14 +142,56 @@ let start_button2 () =
     (int_of_float (Rectangle.y block +. 10.))
     16 Color.black
 
-let create_move_block () =
+let create_move_right_block () =
   if is_mouse_button_pressed MouseButton.Left && not !block_selected_x then
     let _ = block_id := !block_id + 1 in
     on_screen :=
       {
-        op = Move;
+        op = Right;
         color = Color.gold;
         rect = Rectangle.create 10. 100. 100. 40.;
+        visible = true;
+        id = !block_id;
+        test = false;
+      }
+      :: !on_screen
+
+let create_move_left_block () =
+  if is_mouse_button_pressed MouseButton.Left && not !block_selected_x then
+    let _ = block_id := !block_id + 1 in
+    on_screen :=
+      {
+        op = Left;
+        color = Color.orange;
+        rect = Rectangle.create 10. 150. 100. 40.;
+        visible = true;
+        id = !block_id;
+        test = false;
+      }
+      :: !on_screen
+
+let create_move_up_block () =
+  if is_mouse_button_pressed MouseButton.Left && not !block_selected_x then
+    let _ = block_id := !block_id + 1 in
+    on_screen :=
+      {
+        op = Up;
+        color = Color.red;
+        rect = Rectangle.create 10. 200. 100. 40.;
+        visible = true;
+        id = !block_id;
+        test = false;
+      }
+      :: !on_screen
+
+let create_move_down_block () =
+  if is_mouse_button_pressed MouseButton.Left && not !block_selected_x then
+    let _ = block_id := !block_id + 1 in
+    on_screen :=
+      {
+        op = Down;
+        color = Color.blue;
+        rect = Rectangle.create 10. 250. 100. 40.;
         visible = true;
         id = !block_id;
         test = false;
@@ -132,7 +205,7 @@ let create_turn_block () =
       {
         op = Turn;
         color = Color.green;
-        rect = Rectangle.create 10. 150. 100. 40.;
+        rect = Rectangle.create 10. 300. 100. 40.;
         visible = true;
         id = !block_id;
         test = false;
@@ -146,7 +219,7 @@ let create_wait_block () =
       {
         op = Wait;
         color = Color.purple;
-        rect = Rectangle.create 10. 200. 100. 40.;
+        rect = Rectangle.create 10. 350. 100. 40.;
         visible = true;
         id = !block_id;
         test = false;
@@ -154,21 +227,14 @@ let create_wait_block () =
       :: !on_screen
 
 let create_code_blocks () =
-  if
-    within stay_rect_move
-      (float_of_int (get_mouse_x ()))
-      (float_of_int (get_mouse_y ()))
-  then create_move_block ();
-  if
-    within stay_rect_turn
-      (float_of_int (get_mouse_x ()))
-      (float_of_int (get_mouse_y ()))
-  then create_turn_block ();
-  if
-    within stay_rect_wait
-      (float_of_int (get_mouse_x ()))
-      (float_of_int (get_mouse_y ()))
-  then create_wait_block ()
+  let mousex = float_of_int (get_mouse_x ()) in
+  let mousey = float_of_int (get_mouse_y ()) in
+  if within stay_rect_right mousex mousey then create_move_right_block ();
+  if within stay_rect_left mousex mousey then create_move_left_block ();
+  if within stay_rect_up mousex mousey then create_move_up_block ();
+  if within stay_rect_down mousex mousey then create_move_down_block ();
+  if within stay_rect_turn mousex mousey then create_turn_block ();
+  if within stay_rect_wait mousex mousey then create_wait_block ()
 
 let visible_false_helper block =
   let block_rect = block.rect in
@@ -192,7 +258,10 @@ let move_block block =
   let _ = draw_rectangle_rec rect color in
   let text =
     match op with
-    | Move -> "Move Cat"
+    | Right -> "Move Right"
+    | Left -> "Move Left"
+    | Up -> "Move Up"
+    | Down -> "Move Down"
     | Turn -> "Turn Cat"
     | Wait -> "Wait"
   in
@@ -223,7 +292,7 @@ let sort_block_position on_screen =
   let curr_y = ref 150. in
   let format_block_pos block =
     let { op = _; color = _; visible = _; rect; id = _; test = _ } = block in
-    change_rect rect 250. !curr_y;
+    change_rect rect 275. !curr_y;
     curr_y := !curr_y +. 45.;
     rect
   in
@@ -234,18 +303,20 @@ let get_op block = block.op
 let text_grab block =
   match get_op block with
   | Turn -> "Turn"
-  | Move -> "Move"
+  | Right -> "Move Right"
+  | Left -> "Move Left"
+  | Up -> "Move Up"
+  | Down -> "Move Down"
   | Wait -> "Wait"
 
 let run_opp op =
   match op with
-  | Turn ->
-      Cat.change_direction ();
-      ()
-  | Move ->
-      Cat.move_right 2.0;
-      ()
-  | Wait -> wait_time 5.0
+  | Turn -> Cat.change_direction ()
+  | Right -> Cat.move_right default_move
+  | Left -> Cat.move_left default_move
+  | Up -> Cat.move_up default_move
+  | Down -> Cat.move_down default_move
+  | Wait -> wait_time 2.0
 
 let rec run_code_blocks lst =
   match lst with
@@ -278,13 +349,18 @@ let run_text () =
   draw_text "Code Blocks" 10 68 16 Color.black;
   draw_text "Workspace" ((get_screen_width () / 4) + 10) 68 16 Color.black;
   draw_text "OScratch" 10 10 48 Color.blue;
-  draw_text "Press \"h\" to step" (get_screen_width () - 200) 30 16 Color.pink
+  draw_text "Press \"h\" to step" (get_screen_width () - 200) 30 16 Color.pink;
+  draw_text "Press \"c\" to clear"
+    (get_screen_width () - 200)
+    15 16 Color.darkpurple
 
 let sort_post () =
   if is_key_pressed S then
     let _ = sort_block_position !on_screen in
     ()
 
+let clear_on_screen () = on_screen := []
+let clear_all () = if is_key_pressed C then clear_on_screen ()
 let run_block () = if is_key_pressed R then run_code_blocks !on_screen
 let run_head_block () = if is_key_pressed H then run_head ()
 
@@ -305,7 +381,18 @@ let setup_view () =
     (get_screen_width () - 100)
     (get_screen_height () - 40)
     10 Color.white;
-  run_text ()
+  run_text ();
+  sort_post ();
+  clear_all ()
+
+let setup_stationary_blocks () =
+  start_button2 ();
+  testing_station_right ();
+  testing_station_left ();
+  testing_station_up ();
+  testing_station_down ();
+  testing_station_turn ();
+  testing_station_wait ()
 
 let rec loop () =
   if window_should_close () then close_window
@@ -314,24 +401,16 @@ let rec loop () =
     begin_drawing ();
     setup_view ();
     draw_on_screen ();
+    setup_stationary_blocks ();
     create_code_blocks ();
-    start_button2 ();
-    testing_station2 ();
-    testing_station ();
-    testing_station3 ();
     visible_false ();
     remove_block_tc ();
-    sort_post ();
     end_drawing ();
     print_endline (string_of_int (List.length !on_screen));
     draw_cat ();
     run_block ();
     update_ref_test ();
     run_head_block ();
-
-    (*Can test new cat features under here*)
-    (* Cat.change_direction (); *)
-    (*Cat.move_right 0.5; print_float (Cat.get_x ());*)
     loop ()
 
 let grab_string_screen () = !string_on_screen
@@ -352,10 +431,10 @@ let create_turn_test x y =
     test = true;
   }
 
-let create_move_test x y =
+let create_right_test x y =
   let _ = block_id_test := !block_id_test + 1 in
   {
-    op = Move;
+    op = Right;
     color = Color.gold;
     rect = Rectangle.create x y 100. 40.;
     visible = true;
