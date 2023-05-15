@@ -18,6 +18,7 @@ type code_block = {
   test : bool;
 }
 
+let music_muted = ref false
 let default_move = 5.0
 let block_id = ref 0
 let block_id_test = ref 0
@@ -37,7 +38,12 @@ let block_selected_y = ref false
 
 let setup () =
   init_window 1000 800 "[core] example - basic window";
-  set_target_fps 60
+  set_target_fps 60;
+  init_audio_device ();
+  let music = load_music_stream "resources/oscratch.mp3" in
+  set_music_volume music 0.5;
+  play_music_stream music;
+  music
 
 let draw_cat () = Cat.draw_cat ()
 
@@ -266,7 +272,11 @@ let visible_false_helper block =
   if
     Rectangle.x block_rect > float_of_int (get_screen_width () - 100)
     && Rectangle.y block_rect < float_of_int (get_screen_height () - 40)
-  then block.visible <- false
+  then (
+    let trash_sound = load_sound "resources/trash.wav" in
+    set_sound_volume trash_sound 1.0;
+    play_sound trash_sound;
+    block.visible <- false)
 
 let visible_false () =
   let _ = List.map visible_false_helper !on_screen in
@@ -391,6 +401,7 @@ let run_text () =
     ((get_screen_width () / 4) + 10)
     (get_screen_height () - 15)
     16 Color.blue;
+  draw_text "Press \"m\" to mute" 10 (get_screen_height () - 15) 16 Color.blue;
   draw_text "Code Blocks" 10 68 16 Color.black;
   draw_text "Workspace" ((get_screen_width () / 4) + 10) 68 16 Color.black;
   draw_text "OScratch" 10 10 48 Color.blue;
@@ -400,12 +411,31 @@ let run_text () =
     15 16 Color.darkpurple
 
 let sort_post () =
-  if is_key_pressed S then
+  if is_key_pressed S then (
+    let sort_sound = load_sound "resources/sort.wav" in
+    set_sound_volume sort_sound 1.0;
+    play_sound sort_sound;
     let _ = sort_block_position !on_screen in
-    ()
+    ())
 
 let clear_on_screen () = on_screen := []
-let clear_all () = if is_key_pressed C then clear_on_screen ()
+
+let clear_all () =
+  if is_key_pressed C then (
+    let clear_sound = load_sound "resources/clear.wav" in
+    set_sound_volume clear_sound 1.0;
+    play_sound clear_sound;
+    clear_on_screen ())
+
+let mute_music music =
+  if is_key_pressed M then
+    if !music_muted then
+      let _ = music_muted := false in
+      play_music_stream music
+    else
+      let _ = music_muted := true in
+      stop_music_stream music
+
 let run_block () = if is_key_pressed R then run_code_blocks !on_screen
 let run_head_block () = if is_key_pressed H then run_head ()
 
@@ -440,24 +470,34 @@ let setup_stationary_blocks () =
   testing_station_wait ();
   testing_station_color ()
 
-let rec loop () =
-  if window_should_close () then close_window
-  else
-    let _ = 10 in
-    begin_drawing ();
-    setup_view ();
-    draw_on_screen ();
-    setup_stationary_blocks ();
-    create_code_blocks ();
-    visible_false ();
-    remove_block_tc ();
-    end_drawing ();
-    print_endline (string_of_int (List.length !on_screen));
-    draw_cat ();
-    run_block ();
-    update_ref_test ();
-    run_head_block ();
-    loop ()
+let rec loop music () =
+  match Raylib.window_should_close () with
+  | true ->
+      let open Raylib in
+      unload_music_stream music;
+      close_audio_device ();
+      close_window ()
+  | false ->
+      update_music_stream music;
+      mute_music music;
+      begin_drawing ();
+      setup_view ();
+      draw_on_screen ();
+      setup_stationary_blocks ();
+      create_code_blocks ();
+      visible_false ();
+      remove_block_tc ();
+      end_drawing ();
+      print_endline (string_of_int (List.length !on_screen));
+      draw_cat ();
+      run_block ();
+      update_ref_test ();
+      run_head_block ();
+      loop music ()
+
+let () =
+  let music = setup () in
+  loop music ()
 
 let grab_string_screen () = !string_on_screen
 

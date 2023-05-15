@@ -13,7 +13,7 @@ val on_screen : code_block list ref
 (** The list representing all code_blocks that are currently being displayed on
     screen in the GUI*)
 
-val setup : unit -> unit
+val setup : unit -> Raylib.Music.t
 (** [setup ()] t initializes the graphics window with a resolution of 800x450 It
     then sets the target FPS to 60 using functions provided by the raylib
     library. *)
@@ -79,7 +79,7 @@ val setup_view : unit -> unit
 (** [setup_view ()] initializes the sections of the OScratch program, as well as
     initializes all title and message text to display on the GUI*)
 
-val loop : unit -> unit -> unit
+val loop : Raylib.Music.t -> unit -> unit
 (** [loop] executes all operations required by the OScratch game on loop as long
     as the window is still open*)
 
