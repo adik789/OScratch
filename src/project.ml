@@ -510,8 +510,9 @@ let rec loop music () =
       visible_false ();
       remove_block_tc ();
       end_drawing ();
-      draw_cat ();
+
       run_block ();
+      draw_cat ();
       update_ref_test ();
       run_head_block ();
       loop music ()

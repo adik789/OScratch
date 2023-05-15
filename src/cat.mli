@@ -54,6 +54,9 @@ val change_color : Raylib.Color.t -> unit
 (** [change_color] changes the color field in [init_cat] and reflects the change
     on the image of the cat*)
 
+val say_text : string -> unit
+(** [say_text] produces a speach bubble above the cat*)
+
 val get_x : unit -> float
 (** [get_x] is the current x value of the cat. MAINLY USED FOR TESTING*)
 
@@ -65,9 +68,5 @@ val get_width : unit -> float
 
 val get_height : unit -> float
 (*[get_height] is the current height of the cat. MAINLY USED FOR TESTING*)
-
-val reset_cat : unit -> unit
-(*[reset_cat] changes the cat to its initial values as defined initially in
-  [init_cat]*)
 
 val draw_cat : unit -> unit

@@ -27,6 +27,7 @@ let cat_texture () =
   else None
 
 let mutable_color = ref Raylib.Color.white
+let textbox_image = Raylib.load_image "text_bubble.png"
 
 let init_cat () =
   {
@@ -36,7 +37,6 @@ let init_cat () =
     color = !mutable_color;
     direction = Left;
   }
-
 
 let screen_width () = if load_texture then Raylib.get_screen_width () else 1000
 
@@ -48,6 +48,7 @@ let reset_cat () =
   Raylib.Vector2.set_y (init_cat ()).pos 100.;
   mutable_color := Raylib.Color.white;
   cat_width := 200.;
+  cat_height := 200.;
   Raylib.Rectangle.set_width cat_rect !cat_width
 
 let move_right (pixels : float) =
@@ -131,6 +132,22 @@ let shrink (scale : float) =
   Raylib.Rectangle.set_height cat_rect !cat_height;
   Raylib.image_resize (Raylib.addr !cat_image) (int_of_float !cat_width)
     (int_of_float !cat_height)
+
+let say_text (s : string) =
+  Raylib.image_resize (textbox_image |> Raylib.addr) 200 200;
+
+  Raylib.image_draw_text
+    (textbox_image |> Raylib.addr)
+    s 30 30 16 Raylib.Color.black;
+
+  let temp_text = Raylib.load_texture_from_image textbox_image in
+
+  Raylib.draw_texture temp_text
+    (int_of_float (Raylib.Vector2.x (init_cat ()).pos +. 50.))
+    (int_of_float (Raylib.Vector2.y (init_cat ()).pos -. 50.))
+    Raylib.Color.white;
+
+  print_endline s
 
 let vectorize_size (r : Raylib.Rectangle.t) =
   Raylib.Vector2.create (Raylib.Rectangle.width r) (Raylib.Rectangle.height r)
