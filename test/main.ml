@@ -210,8 +210,7 @@ let unsorted_10 = [
   Project.create_right_test 1. 10.; Project.create_wait_test 1. 11.;
   ]
 
-let sorted_10_string = 
-  "Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait "
+let sorted_10_string = "Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait "
 
 let sorted_100 = [
   Project.create_wait_test 1. 2.; Project.create_turn_test 1. 3.;
@@ -461,6 +460,7 @@ let suite = "suite" >::: List.flatten [
   within_tests;
   sort_exec_tests;
   sort_block_pos_tests;
+
  (* run_tests;*)
   cat_float_tests;
   test_create_test;

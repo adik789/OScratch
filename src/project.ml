@@ -656,8 +656,9 @@ let rec loop music () =
       make_info_pop ();
       make_pop ();
       end_drawing ();
-      draw_cat ();
+
       run_block ();
+      draw_cat ();
       update_ref_test ();
       run_head_block ();
       loop music ()
