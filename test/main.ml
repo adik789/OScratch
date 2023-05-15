@@ -1,3 +1,13 @@
+(**Test Plan: Our OUnit tests test the functionality of the functions associated
+   with manipulating the cat sprite and algorithms associated with sorting,
+   testing, and running the code blocks that are in the workspace. We manually
+   tested any GUI functionality as there was no way to simulate various GUI
+   actions in OUnit. Our test plan demonstrates good coverage because we try to
+   account for as many possible combinations of blocks and errors that their
+   related functions might cause. Our tests cover the modules project.ml and
+   cat.ml, and we used a combination of black and glass-box testing to develop
+   them. *)
+
 open OUnit2
 open Raylib
 open Game

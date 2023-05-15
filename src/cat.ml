@@ -104,7 +104,10 @@ let extract_texture o =
   | None -> Raylib.load_texture "200px-ScratchCat-Small.png"
 
 let grow (scale : float) =
-  if !cat_width *. scale > 500. || !cat_height *. scale > 500. then (
+  if
+    abs_float (!cat_width *. scale) > 500.
+    || abs_float (!cat_height *. scale) > 500.
+  then (
     cat_width := 500.;
     cat_height := 500.)
   else (
@@ -112,15 +115,19 @@ let grow (scale : float) =
     cat_height := scale *. !cat_height);
   Raylib.Rectangle.set_width cat_rect !cat_width;
   Raylib.Rectangle.set_height cat_rect !cat_height;
-  Raylib.image_resize (Raylib.addr cat_image) (int_of_float !cat_width)
-    (int_of_float !cat_height);
+  Raylib.image_resize (Raylib.addr cat_image)
+    (int_of_float (abs_float !cat_width))
+    (int_of_float (abs_float !cat_height));
   (* Check to see if needs to be resized*)
   move_right 0.;
   move_down 0.
 
 let shrink (scale : float) =
   (* grow (1. /. scale) *)
-  if !cat_width /. scale < 100. || !cat_height /. scale < 100. then (
+  if
+    abs_float (!cat_width /. scale) < 100.
+    || abs_float (!cat_height /. scale) < 100.
+  then (
     cat_width := 100.;
     cat_height := 100.)
   else (
@@ -128,8 +135,9 @@ let shrink (scale : float) =
     cat_height := !cat_height /. scale);
   Raylib.Rectangle.set_width cat_rect !cat_width;
   Raylib.Rectangle.set_height cat_rect !cat_height;
-  Raylib.image_resize (Raylib.addr cat_image) (int_of_float !cat_width)
-    (int_of_float !cat_height)
+  Raylib.image_resize (Raylib.addr cat_image)
+    (int_of_float (abs_float !cat_width))
+    (int_of_float (abs_float !cat_height))
 
 let say_text (s : string) =
   Raylib.image_resize (textbox_image |> Raylib.addr) 200 200;
