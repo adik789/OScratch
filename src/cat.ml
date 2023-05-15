@@ -1,4 +1,4 @@
-let load_texture = true
+let load_texture = false
 
 type direction =
   | Left

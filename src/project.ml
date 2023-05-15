@@ -57,7 +57,7 @@ let info_status = ref false
 
 let setup () =
   init_window 1000 800 "[core] example - basic window";
-  set_target_fps 60;
+  set_target_fps 200;
   init_audio_device ();
   let music = load_music_stream "resources/oscratch.mp3" in
   set_music_volume music 0.5;
@@ -690,6 +690,8 @@ let match_color opp =
   | Down -> Color.blue
   | Wait -> Color.purple
   | Color -> Color.gray
+  | Grow -> Color.darkpurple
+  | Shrink -> Color.pink
 
 let match_opp_string s =
   match s with
