@@ -94,6 +94,9 @@ val create_turn_test : float -> float -> code_block
 
 val create_wait_test : float -> float -> code_block
 
+val create_test_block : string -> float -> float -> code_block
+(**[create_test_block opp x y ] creates a test code block of type opp*)
+
 val list_to_string : string list -> string
 (** [list_to_string lst] returns the contents of lst as a string Example: lst =
     [ "hello" ; "friend"] then the result = "hello friend "*)

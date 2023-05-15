@@ -31,11 +31,13 @@ let stay_rect_wait = Rectangle.create 10. 350. 100. 40.
 let stay_rect_color = Rectangle.create 10. 400. 100. 40.
 let start_button = Rectangle.create 275. 100. 100. 40.
 let reset_button = Rectangle.create 900. 70. 100. 30.
+let info_rect = Rectangle.create 500. 500. 600. 600.
 let on_screen = ref []
 let string_on_screen = ref []
 let ref_test = ref 0
 let block_selected_x = ref false
 let block_selected_y = ref false
+let info_status = ref false
 
 let setup () =
   init_window 1000 800 "[core] example - basic window";
@@ -103,6 +105,41 @@ let testing_station_wait () =
     (int_of_float (Rectangle.x block +. 10.))
     (int_of_float (Rectangle.y block +. 5.))
     16 Color.black
+
+let info_extra () =
+  let block = info_rect in
+  draw_text "Click h to run 1 block at a time"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 140.))
+    20 Color.black;
+  draw_text "Click c to clear code blocks"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 180.))
+    20 Color.black;
+  draw_text "Click i to exit this window"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 220.))
+    20 Color.black
+
+let testing_info_wait () =
+  let block = info_rect in
+  let _ = draw_rectangle_rec block Color.pink in
+  draw_text "Instructions"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 20.))
+    25 Color.red;
+  draw_text "Drag Code Blocks Onto Workspace"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 60.))
+    20 Color.black;
+  draw_text "Click s to arrange code blocks"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 100.))
+    20 Color.black;
+  info_extra ()
+
+let make_info_pop () = if is_key_pressed I then info_status := not !info_status
+let make_pop () = if !info_status == true then testing_info_wait ()
 
 let testing_station_right () =
   let block = stay_rect_right in
@@ -401,6 +438,9 @@ let run_text () =
   draw_text "Workspace" ((get_screen_width () / 4) + 10) 68 16 Color.black;
   draw_text "OScratch" 10 10 48 Color.blue;
   draw_text "Press \"H\" to Step" (get_screen_width () - 200) 30 16 Color.pink;
+  draw_text "Press \"I\" for Instructions" 10
+    (get_screen_height () - 50)
+    16 Color.red;
   draw_text "Press \"C\" to Clear"
     (get_screen_width () - 200)
     15 16 Color.darkpurple
@@ -522,6 +562,8 @@ let rec loop music () =
       create_code_blocks ();
       visible_false ();
       remove_block_tc ();
+      make_info_pop ();
+      make_pop ();
       end_drawing ();
       draw_cat ();
       run_block ();
@@ -541,6 +583,39 @@ let create_turn_test x y =
   {
     op = Turn;
     color = Color.green;
+    rect = Rectangle.create x y 100. 40.;
+    visible = true;
+    id = !block_id_test;
+    test = true;
+  }
+
+let match_color opp =
+  match opp with
+  | Turn -> Color.green
+  | Right -> Color.gold
+  | Left -> Color.orange
+  | Up -> Color.red
+  | Down -> Color.blue
+  | Wait -> Color.purple
+  | Color -> Color.gray
+
+let match_opp_string s =
+  match s with
+  | "Turn" -> Turn
+  | "Move Right" -> Right
+  | "Move Left" -> Left
+  | "Move Up" -> Up
+  | "Move Down" -> Down
+  | "Wait" -> Wait
+  | "Color" -> Color
+  | _ -> failwith "Invalid Function"
+
+let create_test_block opp x y =
+  let opp2 = match_opp_string opp in
+  let _ = block_id_test := !block_id_test + 1 in
+  {
+    op = opp2;
+    color = match_color opp2;
     rect = Rectangle.create x y 100. 40.;
     visible = true;
     id = !block_id_test;
