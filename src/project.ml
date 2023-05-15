@@ -431,8 +431,20 @@ let mute_music music =
       let _ = music_muted := true in
       stop_music_stream music
 
+let click_sound () =
+  if is_mouse_button_pressed MouseButton.Left then (
+    let click_sound = load_sound "resources/click1.wav" in
+    set_sound_volume click_sound 1.0;
+    play_sound click_sound)
+
 let run_block () = if is_key_down R then run_head ()
-let run_head_block () = if is_key_pressed H then run_head ()
+
+let run_head_block () =
+  if is_key_pressed H then (
+    let step_sound = load_sound "resources/step.wav" in
+    set_sound_volume step_sound 1.0;
+    play_sound step_sound;
+    run_head ())
 
 let reset_button () =
   let block = reset_button in
@@ -479,7 +491,8 @@ let setup_view () =
     16 Color.white;
   run_text ();
   sort_post ();
-  clear_all ()
+  clear_all ();
+  click_sound ()
 
 let setup_stationary_blocks () =
   reset_button ();
