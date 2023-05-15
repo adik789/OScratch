@@ -66,7 +66,7 @@ let info_status = ref false
 
 let setup () =
   init_window 1000 800 "[core] example - basic window";
-  set_target_fps 200;
+  set_target_fps 60;
   init_audio_device ();
   let music = load_music_stream "resources/oscratch.mp3" in
   set_music_volume music 0.5;
@@ -831,22 +831,11 @@ let rec loop music () =
       setup_stationary_blocks ();
       create_code_blocks ();
       visible_false ();
-      remove_block_tc ();
-      make_info_pop ();
-      make_pop ();
-      end_drawing ();
-      run_block ();
-      draw_cat ();
-      update_ref_test ();
-      run_head_block ();
       unload_texture
         (match (Cat.init_cat ()).texture with
         | Some t -> t
         | None -> failwith "not loading");
-
       loop_helper ();
-      
-
       loop music ()
 
 let grab_string_screen () =

@@ -1,7 +1,3 @@
-
-let load_texture = true
-
-
 type direction =
   | Left
   | Right
