@@ -1,2 +1,3 @@
-let start = Game.Project.setup () |> Game.Project.loop
-let _ = start
+let _ =
+  let music = Game.Project.setup () in
+  Game.Project.loop music ()
