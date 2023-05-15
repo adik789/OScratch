@@ -19,7 +19,7 @@ type code_block = {
 }
 
 let music_muted = ref false
-let default_move = 50.0
+let default_move = 10.0
 let block_id = ref 0
 let block_id_test = ref 0
 let stay_rect_right = Rectangle.create 10. 100. 100. 40.
@@ -152,26 +152,6 @@ let testing_station_color () =
     (int_of_float (Rectangle.y block +. 5.))
     16 Color.black
 
-let reset_button () =
-  let block = reset_button in
-  let _ = draw_rectangle_rounded reset_button 0.5 3 Color.red in
-  draw_text "Reset"
-    (int_of_float (Rectangle.x block +. 25.))
-    (int_of_float (Rectangle.y block +. 10.))
-    16 Color.white;
-  let mousex = float_of_int (get_mouse_x ()) in
-  let mousey = float_of_int (get_mouse_y ()) in
-  if within reset_button mousex mousey && is_mouse_button_down MouseButton.Left
-  then reset_cat ()
-
-let start_button () =
-  let block = start_button in
-  let _ = draw_rectangle_rounded start_button 0.5 3 Color.skyblue in
-  draw_text "Start"
-    (int_of_float (Rectangle.x block +. 25.))
-    (int_of_float (Rectangle.y block +. 10.))
-    16 Color.black
-
 let create_move_right_block () =
   if is_mouse_button_pressed MouseButton.Left && not !block_selected_x then
     let _ = block_id := !block_id + 1 in
@@ -284,8 +264,8 @@ let create_code_blocks () =
 let visible_false_helper block =
   let block_rect = block.rect in
   if
-    Rectangle.x block_rect > float_of_int (get_screen_width () - 100)
-    && Rectangle.y block_rect < float_of_int (get_screen_height () - 40)
+    Rectangle.x block_rect > float_of_int (get_screen_width () - 120)
+    && Rectangle.y block_rect < float_of_int (get_screen_height () - 50)
   then (
     let trash_sound = load_sound "resources/trash.wav" in
     set_sound_volume trash_sound 1.0;
@@ -398,29 +378,30 @@ let rec run_code_blocks lst =
 (*let update_test () = ref_test := sort_exec_order ()*)
 
 let run_head () =
-  let sorted = sort_exec_order !on_screen in
-  let block = List.nth sorted !ref_test in
-  (if block.test = false then run_opp (get_op (List.nth sorted !ref_test))
-  else
-    let _ = text_grab block :: !string_on_screen in
-    ());
-  ref_test := !ref_test + 1
+  if !on_screen <> [] then (
+    let sorted = sort_exec_order !on_screen in
+    let block = List.nth sorted !ref_test in
+    (if block.test = false then run_opp (get_op (List.nth sorted !ref_test))
+    else
+      let _ = text_grab block :: !string_on_screen in
+      ());
+    ref_test := !ref_test + 1)
 
 let update_ref_test () =
   if !ref_test >= List.length !on_screen then ref_test := 0 else ()
 
 let run_text () =
-  draw_text "Press \"r\" to run" (get_screen_width () - 200) 45 16 Color.purple;
-  draw_text "Press \"s\" to sort"
+  draw_text "Hold \"R\" to Run" (get_screen_width () - 200) 45 16 Color.purple;
+  draw_text "Press \"S\" to Sort"
     ((get_screen_width () / 4) + 10)
     (get_screen_height () - 15)
     16 Color.blue;
-  draw_text "Press \"m\" to mute" 10 (get_screen_height () - 15) 16 Color.blue;
+  draw_text "Press \"M\" to Mute" 10 (get_screen_height () - 15) 16 Color.blue;
   draw_text "Code Blocks" 10 68 16 Color.black;
   draw_text "Workspace" ((get_screen_width () / 4) + 10) 68 16 Color.black;
   draw_text "OScratch" 10 10 48 Color.blue;
-  draw_text "Press \"h\" to step" (get_screen_width () - 200) 30 16 Color.pink;
-  draw_text "Press \"c\" to clear"
+  draw_text "Press \"H\" to Step" (get_screen_width () - 200) 30 16 Color.pink;
+  draw_text "Press \"C\" to Clear"
     (get_screen_width () - 200)
     15 16 Color.darkpurple
 
@@ -450,16 +431,42 @@ let mute_music music =
       let _ = music_muted := true in
       stop_music_stream music
 
-let run_block () = if is_key_pressed R then run_code_blocks !on_screen
+let run_block () = if is_key_down R then run_head ()
 let run_head_block () = if is_key_pressed H then run_head ()
+
+let reset_button () =
+  let block = reset_button in
+  let _ = draw_rectangle_rounded reset_button 0.5 3 Color.red in
+  draw_text "Reset"
+    (int_of_float (Rectangle.x block +. 25.))
+    (int_of_float (Rectangle.y block +. 10.))
+    16 Color.white;
+  let mousex = float_of_int (get_mouse_x ()) in
+  let mousey = float_of_int (get_mouse_y ()) in
+  if within reset_button mousex mousey && is_mouse_button_down MouseButton.Left
+  then reset_cat ()
+
+let start_button () =
+  let block = start_button in
+  let _ = draw_rectangle_rounded start_button 0.5 3 Color.skyblue in
+  draw_text "Start"
+    (int_of_float (Rectangle.x block +. 25.))
+    (int_of_float (Rectangle.y block +. 10.))
+    16 Color.black;
+  let mousex = float_of_int (get_mouse_x ()) in
+  let mousey = float_of_int (get_mouse_y ()) in
+  if
+    within start_button mousex mousey
+    && is_mouse_button_pressed MouseButton.Left
+  then run_code_blocks !on_screen
 
 let setup_view () =
   clear_background Color.raywhite;
   draw_rectangle 0 60 (get_screen_width ()) 3 Color.black;
   draw_rectangle
-    (get_screen_width () - 105)
-    (get_screen_height () - 45)
-    105 45 Color.red;
+    (get_screen_width () - 125)
+    (get_screen_height () - 55)
+    125 55 Color.red;
   draw_rectangle
     (get_screen_width () / 4)
     60 3 (get_screen_height ()) Color.black;
@@ -469,7 +476,7 @@ let setup_view () =
   draw_text "Trash Can"
     (get_screen_width () - 100)
     (get_screen_height () - 40)
-    10 Color.white;
+    16 Color.white;
   run_text ();
   sort_post ();
   clear_all ()
@@ -503,7 +510,6 @@ let rec loop music () =
       visible_false ();
       remove_block_tc ();
       end_drawing ();
-      print_endline (string_of_int (List.length !on_screen));
       draw_cat ();
       run_block ();
       update_ref_test ();

@@ -36,7 +36,9 @@ let init_cat () =
 let reset_cat () =
   Raylib.Vector2.set_x (init_cat ()).pos 500.;
   Raylib.Vector2.set_y (init_cat ()).pos 100.;
-  mutable_color := Raylib.Color.white
+  mutable_color := Raylib.Color.white;
+  cat_width := 200.;
+  Raylib.Rectangle.set_width cat_rect !cat_width
 
 let move_right (pixels : float) =
   Raylib.Vector2.set_x (init_cat ()).pos
