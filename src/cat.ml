@@ -1,4 +1,4 @@
-let load_texture = false
+let load_texture = true
 
 type direction =
   | Left
@@ -36,7 +36,6 @@ let init_cat () =
     color = !mutable_color;
     direction = Left;
   }
-
 
 let screen_width () = if load_texture then Raylib.get_screen_width () else 1000
 

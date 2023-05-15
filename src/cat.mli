@@ -66,8 +66,4 @@ val get_width : unit -> float
 val get_height : unit -> float
 (*[get_height] is the current height of the cat. MAINLY USED FOR TESTING*)
 
-val reset_cat : unit -> unit
-(*[reset_cat] changes the cat to its initial values as defined initially in
-  [init_cat]*)
-
 val draw_cat : unit -> unit

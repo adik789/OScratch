@@ -437,11 +437,11 @@ let _ = List.flatten [
   ]
 
 let suite = "suite" >::: List.flatten [
-  (* change_rect_tests;
+  change_rect_tests;
   within_tests;
   sort_exec_tests;
   sort_block_pos_tests;
-  tests; *)
+  tests;
   cat_float_tests;
   ]
   
