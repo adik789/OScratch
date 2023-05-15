@@ -1,4 +1,4 @@
-val load_texture : bool
+(* val load_texture : bool *)
 (** [load_texture] is if the cats texture should be loaded. MUST BE SET TO FALSE
     FOR OUNIT TESTS*)
 

@@ -469,8 +469,8 @@ let run_opp op =
   | Color ->
       let index = Random.int 11 in
       Cat.change_color (List.nth color_list index)
-  | Grow -> Cat.shrink 1.005
-  | Shrink -> Cat.grow 1.005
+  | Grow -> Cat.grow 1.005
+  | Shrink -> Cat.shrink 1.005
 
 let rec run_code_blocks lst =
   match lst with
@@ -656,11 +656,14 @@ let rec loop music () =
       make_info_pop ();
       make_pop ();
       end_drawing ();
-
       run_block ();
       draw_cat ();
       update_ref_test ();
       run_head_block ();
+      unload_texture
+        (match (Cat.init_cat ()).texture with
+        | Some t -> t
+        | None -> failwith "not loading");
       loop music ()
 
 let grab_string_screen () = !string_on_screen

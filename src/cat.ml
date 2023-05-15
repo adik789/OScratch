@@ -1,11 +1,6 @@
-let load_texture = false
-
 type direction =
   | Left
   | Right
-
-let cat_image : Raylib.Image.t ref =
-  ref (Raylib.load_image "200px-ScratchCat-Small.png")
 
 type cat = {
   mutable direction : direction;
@@ -21,13 +16,13 @@ let cat_width = ref 200.
 let cat_height = ref 200.
 let pos_vector = Raylib.Vector2.create 500. 100.
 let cat_rect = Raylib.Rectangle.create 0. 0. !cat_width !cat_height
-
-let cat_texture () =
-  if load_texture then Some (Raylib.load_texture_from_image !cat_image)
-  else None
-
 let mutable_color = ref Raylib.Color.white
 let textbox_image = Raylib.load_image "text_bubble.png"
+let load_texture = true
+let cat_image : Raylib.Image.t = Raylib.load_image "200px-ScratchCat-Small.png"
+
+let cat_texture () =
+  if load_texture then Some (Raylib.load_texture_from_image cat_image) else None
 
 let init_cat () =
   {
@@ -49,7 +44,10 @@ let reset_cat () =
   mutable_color := Raylib.Color.white;
   cat_width := 200.;
   cat_height := 200.;
-  Raylib.Rectangle.set_width cat_rect !cat_width
+  Raylib.Rectangle.set_width cat_rect !cat_width;
+  Raylib.Rectangle.set_height cat_rect !cat_height;
+  Raylib.image_resize (Raylib.addr cat_image) (int_of_float !cat_width)
+    (int_of_float !cat_height)
 
 let move_right (pixels : float) =
   if
@@ -114,7 +112,7 @@ let grow (scale : float) =
     cat_height := scale *. !cat_height);
   Raylib.Rectangle.set_width cat_rect !cat_width;
   Raylib.Rectangle.set_height cat_rect !cat_height;
-  Raylib.image_resize (Raylib.addr !cat_image) (int_of_float !cat_width)
+  Raylib.image_resize (Raylib.addr cat_image) (int_of_float !cat_width)
     (int_of_float !cat_height);
   (* Check to see if needs to be resized*)
   move_right 0.;
@@ -130,7 +128,7 @@ let shrink (scale : float) =
     cat_height := !cat_height /. scale);
   Raylib.Rectangle.set_width cat_rect !cat_width;
   Raylib.Rectangle.set_height cat_rect !cat_height;
-  Raylib.image_resize (Raylib.addr !cat_image) (int_of_float !cat_width)
+  Raylib.image_resize (Raylib.addr cat_image) (int_of_float !cat_width)
     (int_of_float !cat_height)
 
 let say_text (s : string) =
@@ -155,6 +153,8 @@ let vectorize_size (r : Raylib.Rectangle.t) =
 let draw_cat () =
   let init_cat = init_cat () in
   if load_texture then
+    (* Raylib.set_texture_filter (extract_texture init_cat.texture)
+       Raylib.TextureFilter.Point; *)
     Raylib.draw_texture_rec
       (extract_texture init_cat.texture)
       init_cat.rect init_cat.pos init_cat.color
