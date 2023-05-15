@@ -50,13 +50,105 @@ let test_sort_block_pos (name: string) (lst: Project.code_block list) : test =
 let test_cat_floats (name: string) (action : unit) (f : unit -> float) (exp_value : float) = 
   (* Cat.Move_right 10.; *)
   action;
-  print_float (f ());
+
   let hello = (f ()) in 
   name >::
   fun _ -> assert_equal (hello) exp_value
 
 let cat_float_tests = [
   (* The tests are executed in reverse order for some reason*)
+  
+  test_cat_floats "test grow bottom left border x" () (Cat.get_x) 500.;
+  test_cat_floats "test grow bottom left border y" () (Cat.get_y) 500.;
+  test_cat_floats "test grow bottom left border height" () (Cat.get_width) 500.;
+  test_cat_floats "test grow bottom left border height" (Cat.grow 5.) 
+    (Cat.get_height) 500.;
+  test_cat_floats "test grow bottom left border x" () (Cat.get_x) 500.;
+  test_cat_floats "test grow bottom left border y" () (Cat.get_y) 800.;
+  test_cat_floats "test grow bottom left border height" () (Cat.get_width) 200.;
+  test_cat_floats "test grow bottom left border height" (Cat.grow 2.) 
+    (Cat.get_height) 200.;
+  test_cat_floats "test move shrunk cat to bottom right border x" () (Cat.get_x) 
+  500.;
+  test_cat_floats "test move shrunk cat to bottom right border y" 
+    (Cat.move_left 1000.; Cat.move_down 1000.) (Cat.get_y) 900.;
+  test_cat_floats "test shrink bottom right border width" () (Cat.get_width) 100.;
+  test_cat_floats "test shrink bottom right border height" 
+    (Cat.shrink 5.) (Cat.get_height) 100.;
+  test_cat_floats "test grow bottom right border x" () (Cat.get_x) 500.;
+  test_cat_floats "test grow bottom right border y" () (Cat.get_y) 500.;
+  test_cat_floats "test grow bottom right border height" () (Cat.get_width) 500.;
+  test_cat_floats "test grow bottom right border height" (Cat.grow 2.) 
+    (Cat.get_height) 500.;
+  test_cat_floats "test grow bottom right border x" () (Cat.get_x) 600.;
+  test_cat_floats "test grow bottom right border y" () (Cat.get_y) 600.;
+  test_cat_floats "test grow bottom right border height" () (Cat.get_width) 400.;
+  test_cat_floats "test grow bottom right border height" (Cat.grow 2.) 
+    (Cat.get_height) 400.;
+  test_cat_floats "test grow bottom right border x" () (Cat.get_x) 800.;
+  test_cat_floats "test grow bottom right border y" () (Cat.get_y) 800.;
+  test_cat_floats "test grow bottom right border height" () (Cat.get_width) 200.;
+  test_cat_floats "test grow bottom right border height" (Cat.grow 2.) 
+    (Cat.get_height) 200.;
+  test_cat_floats "test move shrunk cat to bottom right border x" () (Cat.get_x) 
+  900.;
+  test_cat_floats "test move shrunk cat to bottom right border y" 
+    (Cat.move_right 1000.; Cat.move_down 1000.) (Cat.get_y) 900.;
+  test_cat_floats "test shrink top right border width" () (Cat.get_width) 100.;
+  test_cat_floats "test shrink top right border height" 
+    (Cat.shrink 5.) (Cat.get_height) 100.;
+  test_cat_floats "test grow top right border x" () (Cat.get_x) 500.;
+  test_cat_floats "test grow top right border y" () (Cat.get_y) 60.;
+  test_cat_floats "test grow top right border height" () (Cat.get_width) 500.;
+  test_cat_floats "test grow top right border height" (Cat.grow 2.)
+    (Cat.get_height) 500.;
+  test_cat_floats "test grow top right border x" () (Cat.get_x) 600.;
+  test_cat_floats "test grow top right border y" () (Cat.get_y) 60.;
+  test_cat_floats "test grow top right border height" () (Cat.get_width) 400.;
+  test_cat_floats "test grow top right border height" (Cat.grow 2.)
+    (Cat.get_height) 400.;
+  test_cat_floats "test grow top right border x" () (Cat.get_x) 800.;
+  test_cat_floats "test grow top right border y" () (Cat.get_y) 60.;
+  test_cat_floats "test grow top right border height" () (Cat.get_width) 200.;
+  test_cat_floats "test grow top right border height" (Cat.grow 2.) 
+    (Cat.get_height) 200.;
+  test_cat_floats "test move shrunk cat to top right border x" () (Cat.get_x) 
+  900.;
+  test_cat_floats "test move shrunk cat to top right border y" 
+    (Cat.move_right 1000.) (Cat.get_y) 60.;
+  test_cat_floats "test shrink top left border width" () (Cat.get_width) 100.;
+  test_cat_floats "test shrink top left border height" (Cat.shrink 5.) 
+    (Cat.get_height) 100.;
+  test_cat_floats "test top left border x" () (Cat.get_x) 500.;
+  test_cat_floats "test top left border y" () (Cat.get_y) 60.;
+  test_cat_floats "test grow top left border width" () (Cat.get_width) 500.;
+  test_cat_floats "test grow top left border height" (Cat.grow 2.) 
+   (Cat.get_height) 500.;
+  test_cat_floats "test top left border x" () (Cat.get_x) 500.;
+  test_cat_floats "test top left border y" () (Cat.get_y) 60.;
+  test_cat_floats "test grow top left border width" () (Cat.get_width) 400.;
+  test_cat_floats "test grow top left border height" (Cat.grow 2.) 
+    (Cat.get_height) 400.;
+  test_cat_floats "test top left border x" () (Cat.get_x) 500.;
+  test_cat_floats "test top left border y" () (Cat.get_y) 60.;
+  test_cat_floats "test grow top left border width" () (Cat.get_width) 200.;
+  test_cat_floats "test grow top left border height" (Cat.grow 2.) 
+  (Cat.get_height) 200.;
+  test_cat_floats "test border" (Cat.move_up 1000.) (Cat.get_y) 60.;
+  test_cat_floats "test border" (Cat.move_left 1000.) (Cat.get_x) 500.;
+  test_cat_floats "test shrink width" () (Cat.get_width) 100.;
+  test_cat_floats "test shrink height" (Cat.shrink 2.) (Cat.get_height) 100.;
+  test_cat_floats "test shrink width" () (Cat.get_width) 125.;
+  test_cat_floats "test shrink height" (Cat.shrink 2.) (Cat.get_height) 125.;
+  test_cat_floats "test shrink width" () (Cat.get_width) 250.;
+  test_cat_floats "test shrink height" (Cat.shrink 2.) (Cat.get_height) 250.;
+  test_cat_floats "test grow width" () (Cat.get_width) 500.;
+  test_cat_floats "test grow height" (Cat.grow 2.) (Cat.get_height) 500.;
+  test_cat_floats "test grow" () (Cat.get_width) 400.;
+  test_cat_floats "test grow" (Cat.grow 2.) (Cat.get_height) 400.;
+  test_cat_floats "test border" (Cat.move_left 1.) (Cat.get_x) 500.;
+  test_cat_floats "test border" (Cat.move_left 10.) (Cat.get_x) 500.;
+  test_cat_floats "test border" (Cat.move_left 1000.) (Cat.get_x) 500.;
   test_cat_floats "Move left 10 pixels" (Cat.move_left 10.) (Cat.get_x) 500.;
   test_cat_floats "Move right 10 pixels" (Cat.move_right 10.) (Cat.get_x) 510.;
   test_cat_floats "Move up 10 pixels" (Cat.move_up 10.) (Cat.get_y) 100.;
@@ -116,7 +208,8 @@ let unsorted_10 = [
   Project.create_right_test 1. 10.; Project.create_wait_test 1. 11.;
   ]
 
-let sorted_10_string = "Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait "
+let sorted_10_string = 
+  "Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait "
 
 let sorted_100 = [
   Project.create_wait_test 1. 2.; Project.create_turn_test 1. 3.;
@@ -223,7 +316,16 @@ let sorted_100 = [
   ]
 
 
-let sorted_100_string = "Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait Wait Turn Move Right Wait Wait Turn Move Right Wait "
+let sorted_100_string = "Wait Turn Move Right Wait Wait Turn Move Right Wait" ^ 
+" Move Right Wait Wait Turn Move Right Wait Wait Turn Move Right Wait Move" ^
+ " Right Wait Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right" ^
+ " Wait Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait"^
+ " Wait Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait Wait "^
+ "Turn Move Right Wait Wait Turn Move Right Wait Move Right Wait Wait Turn Move"^
+ " Right Wait Wait Turn Move Right Wait Move Right Wait Wait Turn Move Right"^
+ " Wait Wait Turn Move Right Wait Move Right Wait Wait Turn Move Right Wait"^
+ " Wait Turn Move Right Wait Move Right Wait Wait Turn Move Right Wait Wait"^
+ " Turn Move Right Wait "
 
 let sort_exec_tests = [
   test_sort_exec "Empty List" [] "";
@@ -325,12 +427,21 @@ let tests = [
   test_run_blocks "test 1 turn 1 Move Right" [move_0_1; turn_0_0] "Turn Move Right Turn Turn "; 
 ]
 
-let suite = "suite" >::: List.flatten [
+let _ = List.flatten [
   change_rect_tests;
   within_tests;
   sort_exec_tests;
   sort_block_pos_tests;
   tests;
+  (* cat_float_tests; *)
+  ]
+
+let suite = "suite" >::: List.flatten [
+  (* change_rect_tests;
+  within_tests;
+  sort_exec_tests;
+  sort_block_pos_tests;
+  tests; *)
   cat_float_tests;
   ]
   

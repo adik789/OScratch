@@ -44,6 +44,12 @@ val change_direction : unit -> unit
 (** [change_direction] changes the direction field in [init_cat] and reflects
     the image of the cat*)
 
+val grow : float -> unit
+(*[grow] increases both the height and width multiplicatively by [scale]*)
+
+val shrink : float -> unit
+(*[shrink] decreases both the height and width multiplicatively by [scale]*)
+
 val change_color : Raylib.Color.t -> unit
 (** [change_color] changes the color field in [init_cat] and reflects the change
     on the image of the cat*)
@@ -53,5 +59,15 @@ val get_x : unit -> float
 
 val get_y : unit -> float
 (** [get_y] is the current y value of the cat. MAINLY USED FOR TESTING*)
+
+val get_width : unit -> float
+(*[get_width] is the current width of the cat. MAINLY USED FOR TESTING*)
+
+val get_height : unit -> float
+(*[get_height] is the current height of the cat. MAINLY USED FOR TESTING*)
+
+val reset_cat : unit -> unit
+(*[reset_cat] changes the cat to its initial values as defined initially in
+  [init_cat]*)
 
 val draw_cat : unit -> unit
