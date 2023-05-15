@@ -680,7 +680,7 @@ let run_tests =
       "Wait ";
     test_run_blocks "testing on move left"
       [ Project.create_test_block "Move Left" 0. 0. ]
-      "Move Left";
+      "Move Left ";
   ]
 
 let _ =
