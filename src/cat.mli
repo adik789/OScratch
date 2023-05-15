@@ -41,6 +41,12 @@ val change_direction : unit -> unit
 (*[change_direction] changes the direction field in [init_cat] and reflects the
   image of the cat*)
 
+val grow : float -> unit
+(*[grow] increases both the height and width multiplicatively by [scale]*)
+
+val shrink : float -> unit
+(*[shrink] decreases both the height and width multiplicatively by [scale]*)
+
 val get_x : unit -> float
 (*[get_x] is the current x value of the cat. MAINLY USED FOR TESTING*)
 

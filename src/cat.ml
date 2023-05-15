@@ -1,8 +1,11 @@
-let load_texture = false
+let load_texture = true
 
 type direction =
   | Left
   | Right
+
+let cat_image : Raylib.Image.t ref =
+  ref (Raylib.load_image "200px-ScratchCat-Small.png")
 
 type cat = {
   mutable direction : direction;
@@ -15,11 +18,12 @@ type cat = {
 }
 
 let cat_width = ref 200.
+let cat_height = ref 200.
 let pos_vector = Raylib.Vector2.create 500. 100.
-let cat_rect = Raylib.Rectangle.create 0. 0. !cat_width 200.
+let cat_rect = Raylib.Rectangle.create 0. 0. !cat_width !cat_height
 
 let cat_texture () =
-  if load_texture then Some (Raylib.load_texture "200px-ScratchCat-Small.png")
+  if load_texture then Some (Raylib.load_texture_from_image !cat_image)
   else None
 
 let init_cat () =
@@ -59,6 +63,16 @@ let extract_texture o =
   match o with
   | Some s -> s
   | None -> Raylib.load_texture "200px-ScratchCat-Small.png"
+
+let grow (scale : float) =
+  cat_width := scale *. !cat_width;
+  cat_height := scale *. !cat_height;
+  Raylib.Rectangle.set_width cat_rect !cat_width;
+  Raylib.Rectangle.set_height cat_rect !cat_height;
+  Raylib.image_resize (Raylib.addr !cat_image) (int_of_float !cat_width)
+    (int_of_float !cat_height)
+
+let shrink (scale : float) = grow (1. /. scale)
 
 let vectorize_size (r : Raylib.Rectangle.t) =
   Raylib.Vector2.create (Raylib.Rectangle.width r) (Raylib.Rectangle.height r)

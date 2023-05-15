@@ -273,6 +273,8 @@ let rec loop () =
 
     (*Can test new cat features under here*)
     (* Cat.change_direction (); *)
-    Cat.move_right 0.5;
-    print_float (Cat.get_x ());
+    (* Cat.move_right 0.5; *)
+    (* Cat.shrink 1.01; *)
+
+    (* print_float (Cat.get_x ()); *)
     loop ()

@@ -7,10 +7,11 @@ let test_run_blocks (name : string) (name2 : string) =
 let test_cat_floats (name: string) (action : unit) (f : unit -> float) (exp_value : float) = 
   (* Cat.move_right 10.; *)
   action;
-  print_float (f ());
   let hello = (f ()) in 
   name >::
   fun _ -> assert_equal (hello) exp_value
+
+
 
 let cat_float_tests = [
   (* The tests are executed in reverse order for some reason*)
@@ -18,7 +19,7 @@ let cat_float_tests = [
   test_cat_floats "Move right 10 pixels" (Cat.move_right 10.) (Cat.get_x) 510.;
   test_cat_floats "Move up 10 pixels" (Cat.move_up 10.) (Cat.get_y) 100.;
   test_cat_floats "Move down 10 pixels" (Cat.move_down 10.) (Cat.get_y) 110.;
-
+  
 
   ]
 
