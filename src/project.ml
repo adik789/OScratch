@@ -44,7 +44,9 @@ let stay_rect_shrink = Rectangle.create 10. 500. 100. 40.
 let rect_shrink_pop = Rectangle.create 120. 500. 120. 40.
 let start_button = Rectangle.create 275. 100. 100. 40.
 let reset_button = Rectangle.create 900. 70. 100. 30.
+let change_back_button = Rectangle.create 790. 70. 100. 30.
 let info_rect = Rectangle.create 500. 500. 600. 600.
+let background_color = ref Raylib.Color.white
 
 let stationary_blocks =
   [
@@ -456,6 +458,11 @@ let text_grab block =
   | Grow -> "Grow"
   | Shrink -> "Shrink"
 
+let change_back_color () =
+  if !background_color = Raylib.Color.white then
+    background_color := Raylib.Color.darkgray
+  else background_color := Raylib.Color.white
+
 let color_list =
   [
     Raylib.Color.red;
@@ -478,7 +485,7 @@ let run_opp op =
   | Left -> Cat.move_left default_move
   | Up -> Cat.move_up default_move
   | Down -> Cat.move_down default_move
-  | Wait -> wait_time 2.0
+  | Wait -> ()
   | Color ->
       let index = Random.int 11 in
       Cat.change_color (List.nth color_list index)
@@ -769,8 +776,22 @@ let start_button () =
     && is_mouse_button_pressed MouseButton.Left
   then run_code_blocks !on_screen
 
+let change_back_button () =
+  let block = change_back_button in
+  let _ = draw_rectangle_rounded change_back_button 0.5 3 Color.beige in
+  draw_text "Dark Mode"
+    (int_of_float (Rectangle.x block +. 20.))
+    (int_of_float (Rectangle.y block +. 10.))
+    12 Color.white;
+  let mousex = float_of_int (get_mouse_x ()) in
+  let mousey = float_of_int (get_mouse_y ()) in
+  if
+    within change_back_button mousex mousey
+    && is_mouse_button_pressed MouseButton.Left
+  then change_back_color ()
+
 let setup_view () =
-  clear_background Color.raywhite;
+  clear_background !background_color;
   draw_rectangle 0 60 (get_screen_width ()) 3 Color.black;
   draw_rectangle
     (get_screen_width () - 125)
@@ -794,6 +815,7 @@ let setup_view () =
 let setup_stationary_blocks () =
   reset_button ();
   start_button ();
+  change_back_button ();
   testing_station_right ();
   testing_station_left ();
   testing_station_up ();
