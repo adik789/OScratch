@@ -32,6 +32,18 @@ let stay_rect_color = Rectangle.create 10. 400. 100. 40.
 let start_button = Rectangle.create 275. 100. 100. 40.
 let reset_button = Rectangle.create 900. 70. 100. 30.
 let info_rect = Rectangle.create 500. 500. 600. 600.
+
+let stationary_blocks =
+  [
+    stay_rect_right;
+    stay_rect_left;
+    stay_rect_up;
+    stay_rect_down;
+    stay_rect_turn;
+    stay_rect_wait;
+    stay_rect_color;
+  ]
+
 let on_screen = ref []
 let string_on_screen = ref []
 let ref_test = ref 0
@@ -302,7 +314,7 @@ let visible_false_helper block =
   let block_rect = block.rect in
   if
     Rectangle.x block_rect > float_of_int (get_screen_width () - 120)
-    && Rectangle.y block_rect < float_of_int (get_screen_height () - 50)
+    && Rectangle.y block_rect > float_of_int (get_screen_height () - 50)
   then (
     let trash_sound = load_sound "resources/trash.wav" in
     set_sound_volume trash_sound 1.0;
@@ -471,11 +483,32 @@ let mute_music music =
       let _ = music_muted := true in
       stop_music_stream music
 
+let get_rect lst =
+  List.map
+    (fun block ->
+      let { op = _; color = _; rect; visible = _; id = _; test = _ } = block in
+      rect)
+    lst
+
+let check_click () =
+  let rec check_within lst =
+    let mousex = float_of_int (get_mouse_x ()) in
+    let mousey = float_of_int (get_mouse_y ()) in
+    match lst with
+    | [] -> false
+    | h :: t -> within h mousex mousey || check_within t
+  in
+  check_within (get_rect !on_screen) || check_within stationary_blocks
+
 let click_sound () =
-  if is_mouse_button_pressed MouseButton.Left then (
+  if is_mouse_button_pressed MouseButton.Left && check_click () then (
     let click_sound = load_sound "resources/click1.wav" in
     set_sound_volume click_sound 1.0;
     play_sound click_sound)
+  else if is_mouse_button_released MouseButton.Left && check_click () then (
+    let click_sound2 = load_sound "resources/click2.wav" in
+    set_sound_volume click_sound2 1.0;
+    play_sound click_sound2)
 
 let run_block () = if is_key_down R then run_head ()
 

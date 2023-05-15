@@ -33,6 +33,9 @@ val change_rect_position : Raylib.Rectangle.t -> unit
 (** [change_rect_position rect] changes the x and y coordinates of rect to the
     current x and y coordinates of the cursor on screen *)
 
+val get_rect : code_block list -> Raylib.Rectangle.t list
+(** [get_rect blocks] is the list of all Rectangle.t rectangles in blocks *)
+
 val create_code_blocks : unit -> unit
 (** [create_code_blocks ()] detects a left mouse click within any of the
     stationary code blocks, and prepends the respective code_block to on_screen
