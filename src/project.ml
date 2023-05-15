@@ -25,14 +25,23 @@ let default_move = 10.0
 let block_id = ref 0
 let block_id_test = ref 0
 let stay_rect_right = Rectangle.create 10. 100. 100. 40.
+let rect_right_pop = Rectangle.create 120. 100. 120. 40.
 let stay_rect_left = Rectangle.create 10. 150. 100. 40.
+let rect_left_pop = Rectangle.create 120. 150. 120. 40.
 let stay_rect_up = Rectangle.create 10. 200. 100. 40.
+let rect_up_pop = Rectangle.create 120. 200. 120. 40.
 let stay_rect_down = Rectangle.create 10. 250. 100. 40.
+let rect_down_pop = Rectangle.create 120. 250. 120. 40.
 let stay_rect_turn = Rectangle.create 10. 300. 100. 40.
+let rect_turn_pop = Rectangle.create 120. 300. 120. 40.
 let stay_rect_wait = Rectangle.create 10. 350. 100. 40.
+let rect_wait_pop = Rectangle.create 120. 350. 120. 40.
 let stay_rect_color = Rectangle.create 10. 400. 100. 40.
+let rect_color_pop = Rectangle.create 120. 400. 120. 40.
 let stay_rect_grow = Rectangle.create 10. 450. 100. 40.
+let rect_grow_pop = Rectangle.create 120. 450. 120. 40.
 let stay_rect_shrink = Rectangle.create 10. 500. 100. 40.
+let rect_shrink_pop = Rectangle.create 120. 500. 120. 40.
 let start_button = Rectangle.create 275. 100. 100. 40.
 let reset_button = Rectangle.create 900. 70. 100. 30.
 let info_rect = Rectangle.create 500. 500. 600. 600.
@@ -132,9 +141,13 @@ let info_extra () =
     (int_of_float (Rectangle.x block +. 10.))
     (int_of_float (Rectangle.y block +. 180.))
     20 Color.black;
-  draw_text "Click i to exit this window"
+  draw_text "Hover over blocks for info"
     (int_of_float (Rectangle.x block +. 10.))
     (int_of_float (Rectangle.y block +. 220.))
+    20 Color.black;
+  draw_text "Click i to exit this window"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 260.))
     20 Color.black
 
 let testing_info_wait () =
@@ -575,6 +588,161 @@ let run_head_block () =
     play_sound step_sound;
     run_head ())
 
+let make_color_pop () =
+  let x = float_of_int (get_mouse_x ()) in
+  let y = float_of_int (get_mouse_y ()) in
+  if within stay_rect_color x y then (
+    let block = rect_color_pop in
+    let _ = draw_rectangle_rec block Color.beige in
+    draw_text "Changes Color"
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 5.))
+      13 Color.black;
+    draw_text "of Cat"
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 25.))
+      13 Color.black)
+  else ()
+
+let make_wait_pop () =
+  let x = float_of_int (get_mouse_x ()) in
+  let y = float_of_int (get_mouse_y ()) in
+  if within stay_rect_wait x y then (
+    let block = rect_wait_pop in
+    let _ = draw_rectangle_rec block Color.beige in
+    draw_text "Waits for 2"
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 5.))
+      13 Color.black;
+    draw_text "Miliseconds"
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 25.))
+      13 Color.black)
+  else ()
+
+let make_down_pop () =
+  let x = float_of_int (get_mouse_x ()) in
+  let y = float_of_int (get_mouse_y ()) in
+  if within stay_rect_down x y then (
+    let block = rect_down_pop in
+    let _ = draw_rectangle_rec block Color.beige in
+    draw_text "Moves Cat "
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 5.))
+      13 Color.black;
+    draw_text "Down 10 pixels"
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 25.))
+      13 Color.black)
+  else ()
+
+let make_up_pop () =
+  let x = float_of_int (get_mouse_x ()) in
+  let y = float_of_int (get_mouse_y ()) in
+  if within stay_rect_up x y then (
+    let block = rect_up_pop in
+    let _ = draw_rectangle_rec block Color.beige in
+    draw_text "Moves Cat "
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 5.))
+      13 Color.black;
+    draw_text "Up 10 Pixels"
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 25.))
+      13 Color.black)
+  else ()
+
+let make_turn_pop () =
+  let x = float_of_int (get_mouse_x ()) in
+  let y = float_of_int (get_mouse_y ()) in
+  if within stay_rect_turn x y then (
+    let block = rect_turn_pop in
+    let _ = draw_rectangle_rec block Color.beige in
+    draw_text "Turns Cat "
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 5.))
+      13 Color.black;
+    draw_text "Opposite Direction"
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 25.))
+      13 Color.black)
+  else ()
+
+let make_left_pop () =
+  let x = float_of_int (get_mouse_x ()) in
+  let y = float_of_int (get_mouse_y ()) in
+  if within stay_rect_left x y then (
+    let block = rect_left_pop in
+    let _ = draw_rectangle_rec block Color.beige in
+    draw_text "Moves Cat 10"
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 5.))
+      13 Color.black;
+    draw_text "Pixels to the Left"
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 25.))
+      13 Color.black)
+  else ()
+
+let make_right_pop () =
+  let x = float_of_int (get_mouse_x ()) in
+  let y = float_of_int (get_mouse_y ()) in
+  if within stay_rect_right x y then (
+    let block = rect_right_pop in
+    let _ = draw_rectangle_rec block Color.beige in
+    draw_text "Moves Cat 10"
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 5.))
+      13 Color.black;
+    draw_text "Pixels to the Right"
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 25.))
+      13 Color.black)
+  else ()
+
+let make_shrink_pop () =
+  let x = float_of_int (get_mouse_x ()) in
+  let y = float_of_int (get_mouse_y ()) in
+  if within stay_rect_shrink x y then (
+    let block = rect_shrink_pop in
+    let _ = draw_rectangle_rec block Color.beige in
+    draw_text "Shrinks Cat by"
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 5.))
+      13 Color.black;
+    draw_text "a Factor of 0.005"
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 25.))
+      13 Color.black)
+  else ()
+
+let make_grow_pop () =
+  let x = float_of_int (get_mouse_x ()) in
+  let y = float_of_int (get_mouse_y ()) in
+  if within stay_rect_grow x y then (
+    let block = rect_grow_pop in
+    let _ = draw_rectangle_rec block Color.beige in
+    draw_text "Enlarges Cat by"
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 5.))
+      13 Color.black;
+    draw_text "a Factor of 0.005"
+      (int_of_float (Rectangle.x block +. 10.))
+      (int_of_float (Rectangle.y block +. 25.))
+      13 Color.black)
+  else ()
+
+let make_code_pop () =
+  make_color_pop ();
+  make_wait_pop ();
+  make_down_pop ();
+  make_up_pop ();
+  make_turn_pop ();
+  make_right_pop ();
+  make_left_pop ();
+  make_grow_pop ();
+  make_shrink_pop ()
+
 let reset_button () =
   let block = reset_button in
   let _ = draw_rectangle_rounded reset_button 0.5 3 Color.red in
@@ -636,6 +804,17 @@ let setup_stationary_blocks () =
   testing_station_grow ();
   testing_station_shrink ()
 
+let loop_helper () =
+  remove_block_tc ();
+  make_info_pop ();
+  make_pop ();
+  end_drawing ();
+  draw_cat ();
+  run_block ();
+  update_ref_test ();
+  make_code_pop ();
+  run_head_block ()
+
 let rec loop music () =
   match Raylib.window_should_close () with
   | true ->
@@ -652,18 +831,14 @@ let rec loop music () =
       setup_stationary_blocks ();
       create_code_blocks ();
       visible_false ();
-      remove_block_tc ();
-      make_info_pop ();
-      make_pop ();
-      end_drawing ();
-
-      run_block ();
-      draw_cat ();
-      update_ref_test ();
-      run_head_block ();
+      loop_helper ();
+      loop_helper ();
       loop music ()
 
-let grab_string_screen () = !string_on_screen
+let grab_string_screen () =
+  let x = !string_on_screen in
+  string_on_screen := [];
+  x
 
 let rec list_to_string lst =
   match lst with
