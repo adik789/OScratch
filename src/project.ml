@@ -19,7 +19,7 @@ type code_block = {
 }
 
 let music_muted = ref false
-let default_move = 5.0
+let default_move = 50.0
 let block_id = ref 0
 let block_id_test = ref 0
 let stay_rect_right = Rectangle.create 10. 100. 100. 40.
@@ -30,6 +30,7 @@ let stay_rect_turn = Rectangle.create 10. 300. 100. 40.
 let stay_rect_wait = Rectangle.create 10. 350. 100. 40.
 let stay_rect_color = Rectangle.create 10. 400. 100. 40.
 let start_button = Rectangle.create 275. 100. 100. 40.
+let reset_button = Rectangle.create 900. 70. 100. 30.
 let on_screen = ref []
 let string_on_screen = ref []
 let ref_test = ref 0
@@ -46,6 +47,7 @@ let setup () =
   music
 
 let draw_cat () = Cat.draw_cat ()
+let reset_cat () = Cat.reset_cat ()
 
 let change_rect rect x y =
   Rectangle.set_x rect x;
@@ -150,7 +152,19 @@ let testing_station_color () =
     (int_of_float (Rectangle.y block +. 5.))
     16 Color.black
 
-let start_button2 () =
+let reset_button () =
+  let block = reset_button in
+  let _ = draw_rectangle_rounded reset_button 0.5 3 Color.red in
+  draw_text "Reset"
+    (int_of_float (Rectangle.x block +. 25.))
+    (int_of_float (Rectangle.y block +. 10.))
+    16 Color.white;
+  let mousex = float_of_int (get_mouse_x ()) in
+  let mousey = float_of_int (get_mouse_y ()) in
+  if within reset_button mousex mousey && is_mouse_button_down MouseButton.Left
+  then reset_cat ()
+
+let start_button () =
   let block = start_button in
   let _ = draw_rectangle_rounded start_button 0.5 3 Color.skyblue in
   draw_text "Start"
@@ -461,7 +475,8 @@ let setup_view () =
   clear_all ()
 
 let setup_stationary_blocks () =
-  start_button2 ();
+  reset_button ();
+  start_button ();
   testing_station_right ();
   testing_station_left ();
   testing_station_up ();

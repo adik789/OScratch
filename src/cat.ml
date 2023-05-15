@@ -33,6 +33,11 @@ let init_cat () =
     direction = Left;
   }
 
+let reset_cat () =
+  Raylib.Vector2.set_x (init_cat ()).pos 500.;
+  Raylib.Vector2.set_y (init_cat ()).pos 100.;
+  mutable_color := Raylib.Color.white
+
 let move_right (pixels : float) =
   Raylib.Vector2.set_x (init_cat ()).pos
     (Raylib.Vector2.x (init_cat ()).pos +. pixels)
