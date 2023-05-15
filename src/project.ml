@@ -495,10 +495,6 @@ let rec loop music () =
       run_head_block ();
       loop music ()
 
-let () =
-  let music = setup () in
-  loop music ()
-
 let grab_string_screen () = !string_on_screen
 
 let rec list_to_string lst =
