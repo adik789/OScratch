@@ -8,6 +8,8 @@ type operation =
   | Turn
   | Wait
   | Color
+  | Grow
+  | Shrink
 
 type code_block = {
   op : operation;
@@ -29,6 +31,8 @@ let stay_rect_down = Rectangle.create 10. 250. 100. 40.
 let stay_rect_turn = Rectangle.create 10. 300. 100. 40.
 let stay_rect_wait = Rectangle.create 10. 350. 100. 40.
 let stay_rect_color = Rectangle.create 10. 400. 100. 40.
+let stay_rect_grow = Rectangle.create 10. 450. 100. 40.
+let stay_rect_shrink = Rectangle.create 10. 500. 100. 40.
 let start_button = Rectangle.create 275. 100. 100. 40.
 let reset_button = Rectangle.create 900. 70. 100. 30.
 let info_rect = Rectangle.create 500. 500. 600. 600.
@@ -201,6 +205,22 @@ let testing_station_color () =
     (int_of_float (Rectangle.y block +. 5.))
     16 Color.black
 
+let testing_station_grow () =
+  let block = stay_rect_grow in
+  let _ = draw_rectangle_rec stay_rect_grow Color.darkpurple in
+  draw_text "Grow"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 5.))
+    16 Color.white
+
+let testing_station_shrink () =
+  let block = stay_rect_shrink in
+  let _ = draw_rectangle_rec stay_rect_shrink Color.pink in
+  draw_text "Shrink"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 5.))
+    16 Color.black
+
 let create_move_right_block () =
   if is_mouse_button_pressed MouseButton.Left && not !block_selected_x then
     let _ = block_id := !block_id + 1 in
@@ -299,6 +319,34 @@ let create_color_block () =
       }
       :: !on_screen
 
+let create_grow_block () =
+  if is_mouse_button_pressed MouseButton.Left && not !block_selected_x then
+    let _ = block_id := !block_id + 1 in
+    on_screen :=
+      {
+        op = Grow;
+        color = Color.darkpurple;
+        rect = Rectangle.create 10. 450. 100. 40.;
+        visible = true;
+        id = !block_id;
+        test = false;
+      }
+      :: !on_screen
+
+let create_shrink_block () =
+  if is_mouse_button_pressed MouseButton.Left && not !block_selected_x then
+    let _ = block_id := !block_id + 1 in
+    on_screen :=
+      {
+        op = Shrink;
+        color = Color.pink;
+        rect = Rectangle.create 10. 500. 100. 40.;
+        visible = true;
+        id = !block_id;
+        test = false;
+      }
+      :: !on_screen
+
 let create_code_blocks () =
   let mousex = float_of_int (get_mouse_x ()) in
   let mousey = float_of_int (get_mouse_y ()) in
@@ -308,7 +356,9 @@ let create_code_blocks () =
   if within stay_rect_down mousex mousey then create_move_down_block ();
   if within stay_rect_turn mousex mousey then create_turn_block ();
   if within stay_rect_wait mousex mousey then create_wait_block ();
-  if within stay_rect_color mousex mousey then create_color_block ()
+  if within stay_rect_color mousex mousey then create_color_block ();
+  if within stay_rect_grow mousex mousey then create_grow_block ();
+  if within stay_rect_shrink mousex mousey then create_shrink_block ()
 
 let visible_false_helper block =
   let block_rect = block.rect in
@@ -343,6 +393,8 @@ let move_block block =
     | Turn -> "Turn Cat"
     | Wait -> "Wait"
     | Color -> "Color"
+    | Grow -> "Grow"
+    | Shrink -> "Shrink"
   in
   draw_text text
     (int_of_float (Rectangle.x rect +. 10.))
@@ -388,6 +440,23 @@ let text_grab block =
   | Down -> "Move Down"
   | Wait -> "Wait"
   | Color -> "Color"
+  | Grow -> "Grow"
+  | Shrink -> "Shrink"
+
+let color_list =
+  [
+    Raylib.Color.red;
+    Raylib.Color.green;
+    Raylib.Color.white;
+    Raylib.Color.purple;
+    Raylib.Color.beige;
+    Raylib.Color.darkblue;
+    Raylib.Color.darkgreen;
+    Raylib.Color.pink;
+    Raylib.Color.brown;
+    Raylib.Color.yellow;
+    Raylib.Color.orange;
+  ]
 
 let run_opp op =
   match op with
@@ -398,23 +467,10 @@ let run_opp op =
   | Down -> Cat.move_down default_move
   | Wait -> wait_time 2.0
   | Color ->
-      let color_list =
-        [
-          Raylib.Color.red;
-          Raylib.Color.green;
-          Raylib.Color.white;
-          Raylib.Color.purple;
-          Raylib.Color.beige;
-          Raylib.Color.darkblue;
-          Raylib.Color.darkgreen;
-          Raylib.Color.pink;
-          Raylib.Color.brown;
-          Raylib.Color.yellow;
-          Raylib.Color.orange;
-        ]
-      in
       let index = Random.int 11 in
       Cat.change_color (List.nth color_list index)
+  | Grow -> Cat.shrink 1.005
+  | Shrink -> Cat.grow 1.005
 
 let rec run_code_blocks lst =
   match lst with
@@ -576,7 +632,9 @@ let setup_stationary_blocks () =
   testing_station_down ();
   testing_station_turn ();
   testing_station_wait ();
-  testing_station_color ()
+  testing_station_color ();
+  testing_station_grow ();
+  testing_station_shrink ()
 
 let rec loop music () =
   match Raylib.window_should_close () with
