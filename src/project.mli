@@ -33,6 +33,9 @@ val change_rect_position : Raylib.Rectangle.t -> unit
 (** [change_rect_position rect] changes the x and y coordinates of rect to the
     current x and y coordinates of the cursor on screen *)
 
+val get_rect : code_block list -> Raylib.Rectangle.t list
+(** [get_rect blocks] is the list of all Rectangle.t rectangles in blocks *)
+
 val create_code_blocks : unit -> unit
 (** [create_code_blocks ()] detects a left mouse click within any of the
     stationary code blocks, and prepends the respective code_block to on_screen
@@ -93,6 +96,9 @@ val create_turn_test : float -> float -> code_block
 (**[create_turn_test ()] makes a testing code block with operation type Turn *)
 
 val create_wait_test : float -> float -> code_block
+
+val create_test_block : string -> float -> float -> code_block
+(**[create_test_block opp x y ] creates a test code block of type opp*)
 
 val list_to_string : string list -> string
 (** [list_to_string lst] returns the contents of lst as a string Example: lst =

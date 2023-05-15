@@ -8,6 +8,8 @@ type operation =
   | Turn
   | Wait
   | Color
+  | Grow
+  | Shrink
 
 type code_block = {
   op : operation;
@@ -29,13 +31,29 @@ let stay_rect_down = Rectangle.create 10. 250. 100. 40.
 let stay_rect_turn = Rectangle.create 10. 300. 100. 40.
 let stay_rect_wait = Rectangle.create 10. 350. 100. 40.
 let stay_rect_color = Rectangle.create 10. 400. 100. 40.
+let stay_rect_grow = Rectangle.create 10. 450. 100. 40.
+let stay_rect_shrink = Rectangle.create 10. 500. 100. 40.
 let start_button = Rectangle.create 275. 100. 100. 40.
 let reset_button = Rectangle.create 900. 70. 100. 30.
+let info_rect = Rectangle.create 500. 500. 600. 600.
+
+let stationary_blocks =
+  [
+    stay_rect_right;
+    stay_rect_left;
+    stay_rect_up;
+    stay_rect_down;
+    stay_rect_turn;
+    stay_rect_wait;
+    stay_rect_color;
+  ]
+
 let on_screen = ref []
 let string_on_screen = ref []
 let ref_test = ref 0
 let block_selected_x = ref false
 let block_selected_y = ref false
+let info_status = ref false
 
 let setup () =
   init_window 1000 800 "[core] example - basic window";
@@ -104,6 +122,41 @@ let testing_station_wait () =
     (int_of_float (Rectangle.y block +. 5.))
     16 Color.black
 
+let info_extra () =
+  let block = info_rect in
+  draw_text "Click h to run 1 block at a time"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 140.))
+    20 Color.black;
+  draw_text "Click c to clear code blocks"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 180.))
+    20 Color.black;
+  draw_text "Click i to exit this window"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 220.))
+    20 Color.black
+
+let testing_info_wait () =
+  let block = info_rect in
+  let _ = draw_rectangle_rec block Color.pink in
+  draw_text "Instructions"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 20.))
+    25 Color.red;
+  draw_text "Drag Code Blocks Onto Workspace"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 60.))
+    20 Color.black;
+  draw_text "Click s to arrange code blocks"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 100.))
+    20 Color.black;
+  info_extra ()
+
+let make_info_pop () = if is_key_pressed I then info_status := not !info_status
+let make_pop () = if !info_status == true then testing_info_wait ()
+
 let testing_station_right () =
   let block = stay_rect_right in
   let _ = draw_rectangle_rec block Color.gold in
@@ -148,6 +201,22 @@ let testing_station_color () =
   let block = stay_rect_color in
   let _ = draw_rectangle_rec stay_rect_color Color.gray in
   draw_text "Color"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 5.))
+    16 Color.black
+
+let testing_station_grow () =
+  let block = stay_rect_grow in
+  let _ = draw_rectangle_rec stay_rect_grow Color.darkpurple in
+  draw_text "Grow"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 5.))
+    16 Color.white
+
+let testing_station_shrink () =
+  let block = stay_rect_shrink in
+  let _ = draw_rectangle_rec stay_rect_shrink Color.pink in
+  draw_text "Shrink"
     (int_of_float (Rectangle.x block +. 10.))
     (int_of_float (Rectangle.y block +. 5.))
     16 Color.black
@@ -250,6 +319,34 @@ let create_color_block () =
       }
       :: !on_screen
 
+let create_grow_block () =
+  if is_mouse_button_pressed MouseButton.Left && not !block_selected_x then
+    let _ = block_id := !block_id + 1 in
+    on_screen :=
+      {
+        op = Grow;
+        color = Color.darkpurple;
+        rect = Rectangle.create 10. 450. 100. 40.;
+        visible = true;
+        id = !block_id;
+        test = false;
+      }
+      :: !on_screen
+
+let create_shrink_block () =
+  if is_mouse_button_pressed MouseButton.Left && not !block_selected_x then
+    let _ = block_id := !block_id + 1 in
+    on_screen :=
+      {
+        op = Shrink;
+        color = Color.pink;
+        rect = Rectangle.create 10. 500. 100. 40.;
+        visible = true;
+        id = !block_id;
+        test = false;
+      }
+      :: !on_screen
+
 let create_code_blocks () =
   let mousex = float_of_int (get_mouse_x ()) in
   let mousey = float_of_int (get_mouse_y ()) in
@@ -259,13 +356,15 @@ let create_code_blocks () =
   if within stay_rect_down mousex mousey then create_move_down_block ();
   if within stay_rect_turn mousex mousey then create_turn_block ();
   if within stay_rect_wait mousex mousey then create_wait_block ();
-  if within stay_rect_color mousex mousey then create_color_block ()
+  if within stay_rect_color mousex mousey then create_color_block ();
+  if within stay_rect_grow mousex mousey then create_grow_block ();
+  if within stay_rect_shrink mousex mousey then create_shrink_block ()
 
 let visible_false_helper block =
   let block_rect = block.rect in
   if
     Rectangle.x block_rect > float_of_int (get_screen_width () - 120)
-    && Rectangle.y block_rect < float_of_int (get_screen_height () - 50)
+    && Rectangle.y block_rect > float_of_int (get_screen_height () - 50)
   then (
     let trash_sound = load_sound "resources/trash.wav" in
     set_sound_volume trash_sound 1.0;
@@ -294,6 +393,8 @@ let move_block block =
     | Turn -> "Turn Cat"
     | Wait -> "Wait"
     | Color -> "Color"
+    | Grow -> "Grow"
+    | Shrink -> "Shrink"
   in
   draw_text text
     (int_of_float (Rectangle.x rect +. 10.))
@@ -339,6 +440,23 @@ let text_grab block =
   | Down -> "Move Down"
   | Wait -> "Wait"
   | Color -> "Color"
+  | Grow -> "Grow"
+  | Shrink -> "Shrink"
+
+let color_list =
+  [
+    Raylib.Color.red;
+    Raylib.Color.green;
+    Raylib.Color.white;
+    Raylib.Color.purple;
+    Raylib.Color.beige;
+    Raylib.Color.darkblue;
+    Raylib.Color.darkgreen;
+    Raylib.Color.pink;
+    Raylib.Color.brown;
+    Raylib.Color.yellow;
+    Raylib.Color.orange;
+  ]
 
 let run_opp op =
   match op with
@@ -349,23 +467,10 @@ let run_opp op =
   | Down -> Cat.move_down default_move
   | Wait -> wait_time 2.0
   | Color ->
-      let color_list =
-        [
-          Raylib.Color.red;
-          Raylib.Color.green;
-          Raylib.Color.white;
-          Raylib.Color.purple;
-          Raylib.Color.beige;
-          Raylib.Color.darkblue;
-          Raylib.Color.darkgreen;
-          Raylib.Color.pink;
-          Raylib.Color.brown;
-          Raylib.Color.yellow;
-          Raylib.Color.orange;
-        ]
-      in
       let index = Random.int 11 in
       Cat.change_color (List.nth color_list index)
+  | Grow -> Cat.shrink 1.005
+  | Shrink -> Cat.grow 1.005
 
 let rec run_code_blocks lst =
   match lst with
@@ -401,6 +506,9 @@ let run_text () =
   draw_text "Workspace" ((get_screen_width () / 4) + 10) 68 16 Color.black;
   draw_text "OScratch" 10 10 48 Color.blue;
   draw_text "Press \"H\" to Step" (get_screen_width () - 200) 30 16 Color.pink;
+  draw_text "Press \"I\" for Instructions" 10
+    (get_screen_height () - 50)
+    16 Color.red;
   draw_text "Press \"C\" to Clear"
     (get_screen_width () - 200)
     15 16 Color.darkpurple
@@ -431,8 +539,41 @@ let mute_music music =
       let _ = music_muted := true in
       stop_music_stream music
 
+let get_rect lst =
+  List.map
+    (fun block ->
+      let { op = _; color = _; rect; visible = _; id = _; test = _ } = block in
+      rect)
+    lst
+
+let check_click () =
+  let rec check_within lst =
+    let mousex = float_of_int (get_mouse_x ()) in
+    let mousey = float_of_int (get_mouse_y ()) in
+    match lst with
+    | [] -> false
+    | h :: t -> within h mousex mousey || check_within t
+  in
+  check_within (get_rect !on_screen) || check_within stationary_blocks
+
+let click_sound () =
+  if is_mouse_button_pressed MouseButton.Left && check_click () then (
+    let click_sound = load_sound "resources/click1.wav" in
+    set_sound_volume click_sound 1.0;
+    play_sound click_sound)
+  else if is_mouse_button_released MouseButton.Left && check_click () then (
+    let click_sound2 = load_sound "resources/click2.wav" in
+    set_sound_volume click_sound2 1.0;
+    play_sound click_sound2)
+
 let run_block () = if is_key_down R then run_head ()
-let run_head_block () = if is_key_pressed H then run_head ()
+
+let run_head_block () =
+  if is_key_pressed H then (
+    let step_sound = load_sound "resources/step.wav" in
+    set_sound_volume step_sound 1.0;
+    play_sound step_sound;
+    run_head ())
 
 let reset_button () =
   let block = reset_button in
@@ -479,7 +620,8 @@ let setup_view () =
     16 Color.white;
   run_text ();
   sort_post ();
-  clear_all ()
+  clear_all ();
+  click_sound ()
 
 let setup_stationary_blocks () =
   reset_button ();
@@ -490,7 +632,9 @@ let setup_stationary_blocks () =
   testing_station_down ();
   testing_station_turn ();
   testing_station_wait ();
-  testing_station_color ()
+  testing_station_color ();
+  testing_station_grow ();
+  testing_station_shrink ()
 
 let rec loop music () =
   match Raylib.window_should_close () with
@@ -509,6 +653,8 @@ let rec loop music () =
       create_code_blocks ();
       visible_false ();
       remove_block_tc ();
+      make_info_pop ();
+      make_pop ();
       end_drawing ();
 
       run_block ();
@@ -529,6 +675,39 @@ let create_turn_test x y =
   {
     op = Turn;
     color = Color.green;
+    rect = Rectangle.create x y 100. 40.;
+    visible = true;
+    id = !block_id_test;
+    test = true;
+  }
+
+let match_color opp =
+  match opp with
+  | Turn -> Color.green
+  | Right -> Color.gold
+  | Left -> Color.orange
+  | Up -> Color.red
+  | Down -> Color.blue
+  | Wait -> Color.purple
+  | Color -> Color.gray
+
+let match_opp_string s =
+  match s with
+  | "Turn" -> Turn
+  | "Move Right" -> Right
+  | "Move Left" -> Left
+  | "Move Up" -> Up
+  | "Move Down" -> Down
+  | "Wait" -> Wait
+  | "Color" -> Color
+  | _ -> failwith "Invalid Function"
+
+let create_test_block opp x y =
+  let opp2 = match_opp_string opp in
+  let _ = block_id_test := !block_id_test + 1 in
+  {
+    op = opp2;
+    color = match_color opp2;
     rect = Rectangle.create x y 100. 40.;
     visible = true;
     id = !block_id_test;

@@ -21,7 +21,7 @@ let test_run_blocks (name: string) (blocks : Project.code_block list)
 
 let test_text_grab (name: string)(block: Project.code_block)
 (expected_ouput : string) : test = 
-  name >:: fun _ -> assert_equal (Project.text_grab block) expected_ouput
+  name >:: fun _ -> assert_equal (Project.text_grab block) expected_ouput ~printer: String.escaped
 
 let test_list_string (name: string)(lst: string list)
 (expected_output: string) : test = 
@@ -46,6 +46,8 @@ let rec check_x_align lst =
 let test_sort_block_pos (name: string) (lst: Project.code_block list) : test =
   name >:: fun _ ->
     assert_equal (lst |> Project.sort_block_position |> check_x_align) (true)
+
+
 
 let test_cat_floats (name: string) (action : unit) (f : unit -> float) (exp_value : float) = 
   (* Cat.Move_right 10.; *)
@@ -189,10 +191,10 @@ let within_tests = [
   test_within "Slightly off x and y" test_rect 100.000001 100.000001 false;
 ]
 
-let turn_0_0 = Project.create_turn_test 0. 0.
-let move_0_1 = Project.create_right_test 0. 1.
-let wait_1_1 = Project.create_wait_test 1. 1.
-let wait_1_2 = Project.create_wait_test 1. 2.
+let turn_0_0 = Project.create_test_block "Turn" 0. 0.
+let move_0_1 = Project.create_test_block "Move Right" 0. 1.
+let wait_1_1 = Project.create_test_block "Wait" 1. 1.
+let wait_1_2 = Project.create_test_block "Wait" 1. 2.
 let sorted_10 = [
   Project.create_wait_test 1. 2.; Project.create_turn_test 1. 3.;
   Project.create_right_test 1. 4.; Project.create_wait_test 1. 5.;
@@ -347,10 +349,23 @@ let sort_exec_tests = [
   test_sort_exec "A Lot of Blocks Unsorted" unsorted_100 sorted_100_string;
 ]
 
-let turn_100_0 = Project.create_turn_test 100. 0.
-let turn_10_2 = Project.create_turn_test 10. 2.
-let turn_50_2 = Project.create_turn_test 50. 4.
+let turn_100_0 = Project.create_test_block "Turn" 100. 0.
+let turn_10_2 = Project.create_test_block "Turn" 10. 2.
+let turn_50_2 = Project.create_test_block "Turn" 50. 4.
 
+let color_block = Project.create_test_block "Color" 0.0 0.0
+
+
+let test_create_test = [
+  test_text_grab "Testing for Color Block" color_block "Color"; 
+  test_text_grab "Testing for Wait Block" (Project.create_test_block "Wait" 0. 0.) "Wait"; 
+  test_text_grab "Testing for Left Block" (Project.create_test_block "Move Left" 0. 0.) "Move Left"; 
+  test_text_grab "Testing for Right Block" (Project.create_test_block "Move Right" 0. 0.) "Move Right"; 
+  test_text_grab "Testing for Up Block " (Project.create_test_block "Move Up" 0. 0. ) "Move Up"; 
+  test_text_grab "Testing for Down Block" (Project.create_test_block "Move Down" 0. 0.) "Move Down"; 
+  test_text_grab "Testing for Turn Block" (Project.create_test_block "Turn" 0. 0.) "Turn"; 
+  
+]
 let unaligned_100 = [
   Project.create_wait_test 1. 0.; Project.create_turn_test 2. 0.;
   Project.create_wait_test 3. 0.; Project.create_turn_test 4. 0.;
@@ -414,24 +429,29 @@ let sort_block_pos_tests = [
   test_sort_block_pos "Aligned X 100" sorted_100;
   test_sort_block_pos "Unaligned X 100" unaligned_100;
 ]
-let tests = [
-  test_text_grab "test2" (turn_0_0) "Turn"; 
+
+let list_string_test = [
   test_list_string "testing list to string func" ["hello"] "hello ";
   test_list_string "testing for more than 1 thing" ["hello"; "people"] "hello people "; 
   test_list_string "testing for 3 things" ["hello"; "people" ; "pt2"] "hello people pt2 ";
   test_list_string "testing empty list" [] ""; 
-  test_turn_block "testing test blocks" "Turn";
-  test_run_blocks "test 2 turn blocks" [turn_0_0; turn_0_0] "Turn Turn ";
-  test_run_blocks "test 1 turn" [turn_0_0] "Turn "; 
-  test_run_blocks "test 1 turn 1 Move Right" [move_0_1; turn_0_0] "Turn Move Right Turn Turn "; 
 ]
+let run_tests = [
+  test_text_grab "test2" (Project.create_test_block "Turn" 0. 0.) "Turn"; 
+  test_turn_block "testing test blocks" "Turn";
+  test_run_blocks "test 2 turn blocks" [Project.create_test_block "Turn" 0. 0.; Project.create_test_block "Turn" 0. 0.] "Turn Turn ";
+  test_run_blocks "test 1 turn" [Project.create_test_block "Turn" 0. 0.] "Turn "; 
+  test_run_blocks "test 1 turn 1 Move Right" [Project.create_test_block "Turn" 0. 0.; Project.create_test_block "Move Right" 0. 0.] "Move Right Turn "; 
+  test_run_blocks "testing 2 turns and 1 color" [Project.create_test_block "Turn" 0. 0.; Project.create_test_block "Turn" 0. 0.; Project.create_test_block "Color" 0. 0.] "Color Turn Turn "; 
+  test_run_blocks "testing wait block" [Project.create_test_block "Wait" 0. 0.] "Wait "; 
+  test_run_blocks "testing on move left" [Project.create_test_block "Move Left" 0. 0.] "Move Left"
 
+]
 let _ = List.flatten [
   change_rect_tests;
   within_tests;
   sort_exec_tests;
   sort_block_pos_tests;
-  tests;
   (* cat_float_tests; *)
   ]
 
@@ -440,8 +460,12 @@ let suite = "suite" >::: List.flatten [
   within_tests;
   sort_exec_tests;
   sort_block_pos_tests;
-  tests;
+
+ (* run_tests;*)
   cat_float_tests;
+  test_create_test;
+  list_string_test;
+  run_tests;
   ]
   
 let _ = run_test_tt_main suite
