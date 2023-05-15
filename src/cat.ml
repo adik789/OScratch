@@ -11,7 +11,7 @@ type cat = {
   (* mutable *)
   mutable pos : Raylib.Vector2.t;
   (* mutable *)
-  color : Raylib.Color.t;
+  mutable color : Raylib.Color.t;
 }
 
 let cat_width = ref 200.
@@ -22,12 +22,14 @@ let cat_texture () =
   if load_texture then Some (Raylib.load_texture "200px-ScratchCat-Small.png")
   else None
 
+let mutable_color = ref Raylib.Color.white
+
 let init_cat () =
   {
     rect = cat_rect;
     texture = cat_texture ();
     pos = pos_vector;
-    color = Raylib.Color.white;
+    color = !mutable_color;
     direction = Left;
   }
 
@@ -47,6 +49,7 @@ let move_down (pixels : float) =
   Raylib.Vector2.set_y (init_cat ()).pos
     (Raylib.Vector2.y (init_cat ()).pos +. pixels)
 
+(** Should never be a bug*)
 let change_direction () =
   cat_width := !cat_width *. -1.;
   Raylib.Rectangle.set_width cat_rect !cat_width;
@@ -54,7 +57,8 @@ let change_direction () =
   | Right -> (init_cat ()).direction <- Left
   | Left -> (init_cat ()).direction <- Right
 
-(** Should never be a bug*)
+let change_color color = mutable_color := color
+
 let extract_texture o =
   match o with
   | Some s -> s

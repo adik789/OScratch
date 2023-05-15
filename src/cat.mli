@@ -13,7 +13,7 @@ type cat = {
   (* mutable *)
   mutable pos : Raylib.Vector2.t;
   (* mutable *)
-  color : Raylib.Color.t;
+  mutable color : Raylib.Color.t;
 }
 (* [cat] is the representation of cat image*)
 
@@ -40,6 +40,10 @@ val move_down : float -> unit
 val change_direction : unit -> unit
 (*[change_direction] changes the direction field in [init_cat] and reflects the
   image of the cat*)
+
+val change_color : Raylib.Color.t -> unit
+(*[change_color] changes the color field in [init_cat] and reflects the change
+  on the image of the cat*)
 
 val get_x : unit -> float
 (*[get_x] is the current x value of the cat. MAINLY USED FOR TESTING*)

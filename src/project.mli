@@ -41,7 +41,14 @@ val create_code_blocks : unit -> unit
     wait code_block) *)
 
 val visible_false : unit -> unit
+(** [visible_false ()] continuously maps over the on_screen list of blocks to
+    check if any have (x,y) coordinate pairs that are within the trash can area.
+    If so, the visible field of the block is set to false*)
+
 val remove_block_tc : unit -> unit
+(** [remove_block_tc ()] continously maps over the on_screen list of blocks and
+    detects whether any blocks have the visible field set to false. If so, the
+    block is removed from on_screen by mutating the on_screen list*)
 
 val draw_on_screen : unit -> unit
 (** [draw_on_screen ()] detects code_block interaction with any code_blocks on

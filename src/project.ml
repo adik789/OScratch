@@ -7,6 +7,7 @@ type operation =
   | Down
   | Turn
   | Wait
+  | Color
 
 type code_block = {
   op : operation;
@@ -26,6 +27,7 @@ let stay_rect_up = Rectangle.create 10. 200. 100. 40.
 let stay_rect_down = Rectangle.create 10. 250. 100. 40.
 let stay_rect_turn = Rectangle.create 10. 300. 100. 40.
 let stay_rect_wait = Rectangle.create 10. 350. 100. 40.
+let stay_rect_color = Rectangle.create 10. 400. 100. 40.
 let start_button = Rectangle.create 275. 100. 100. 40.
 let on_screen = ref []
 let string_on_screen = ref []
@@ -134,6 +136,14 @@ let testing_station_turn () =
     (int_of_float (Rectangle.y block +. 5.))
     16 Color.black
 
+let testing_station_color () =
+  let block = stay_rect_color in
+  let _ = draw_rectangle_rec stay_rect_color Color.gray in
+  draw_text "Color"
+    (int_of_float (Rectangle.x block +. 10.))
+    (int_of_float (Rectangle.y block +. 5.))
+    16 Color.black
+
 let start_button2 () =
   let block = start_button in
   let _ = draw_rectangle_rounded start_button 0.5 3 Color.skyblue in
@@ -226,6 +236,20 @@ let create_wait_block () =
       }
       :: !on_screen
 
+let create_color_block () =
+  if is_mouse_button_pressed MouseButton.Left && not !block_selected_x then
+    let _ = block_id := !block_id + 1 in
+    on_screen :=
+      {
+        op = Color;
+        color = Color.gray;
+        rect = Rectangle.create 10. 400. 100. 40.;
+        visible = true;
+        id = !block_id;
+        test = false;
+      }
+      :: !on_screen
+
 let create_code_blocks () =
   let mousex = float_of_int (get_mouse_x ()) in
   let mousey = float_of_int (get_mouse_y ()) in
@@ -234,7 +258,8 @@ let create_code_blocks () =
   if within stay_rect_up mousex mousey then create_move_up_block ();
   if within stay_rect_down mousex mousey then create_move_down_block ();
   if within stay_rect_turn mousex mousey then create_turn_block ();
-  if within stay_rect_wait mousex mousey then create_wait_block ()
+  if within stay_rect_wait mousex mousey then create_wait_block ();
+  if within stay_rect_color mousex mousey then create_color_block ()
 
 let visible_false_helper block =
   let block_rect = block.rect in
@@ -264,6 +289,7 @@ let move_block block =
     | Down -> "Move Down"
     | Turn -> "Turn Cat"
     | Wait -> "Wait"
+    | Color -> "Color"
   in
   draw_text text
     (int_of_float (Rectangle.x rect +. 10.))
@@ -308,6 +334,7 @@ let text_grab block =
   | Up -> "Move Up"
   | Down -> "Move Down"
   | Wait -> "Wait"
+  | Color -> "Color"
 
 let run_opp op =
   match op with
@@ -317,6 +344,24 @@ let run_opp op =
   | Up -> Cat.move_up default_move
   | Down -> Cat.move_down default_move
   | Wait -> wait_time 2.0
+  | Color ->
+      let color_list =
+        [
+          Raylib.Color.red;
+          Raylib.Color.green;
+          Raylib.Color.white;
+          Raylib.Color.purple;
+          Raylib.Color.beige;
+          Raylib.Color.darkblue;
+          Raylib.Color.darkgreen;
+          Raylib.Color.pink;
+          Raylib.Color.brown;
+          Raylib.Color.yellow;
+          Raylib.Color.orange;
+        ]
+      in
+      let index = Random.int 11 in
+      Cat.change_color (List.nth color_list index)
 
 let rec run_code_blocks lst =
   match lst with
@@ -392,7 +437,8 @@ let setup_stationary_blocks () =
   testing_station_up ();
   testing_station_down ();
   testing_station_turn ();
-  testing_station_wait ()
+  testing_station_wait ();
+  testing_station_color ()
 
 let rec loop () =
   if window_should_close () then close_window
